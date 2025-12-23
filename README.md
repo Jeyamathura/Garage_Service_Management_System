@@ -1,22 +1,22 @@
-Check Python Installation
+Check Python Installation:
 	python --version
 
-Install Django
+Install Django:
 	pip install django
 	or
 	python -m pip install Django
 
-Verify Django Installation
+Verify Django Installation:
 	django-admin --version
 
-Go to the Project Folder
+Go to the Project Folder:
 	cd Garage_Service_Management_System
 
-Create Django Project (Backend)
+Create Django Project (Backend):
 	python -m django startproject garage_backend
 
-Enter Project Directory - garage_backend
+Enter Project Directory - garage_backend:
 	cd garage_backend
 
-Create Main App
+Create Main App:
 	python manage.py startapp core
