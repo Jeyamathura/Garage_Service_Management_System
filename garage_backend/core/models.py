@@ -1,26 +1,21 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
 #User Model
-class User(models.Model):
+class User(AbstractUser):
     ROLE_CHOICES = (
         ('ADMIN', 'Admin'),
         ('CUSTOMER', 'Customer'),
     )
 
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=150, unique=True)
-    password = models.CharField(max_length=255)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
 
     class Meta:
         db_table = 'user'
 
     def __str__(self):
-        return self.email
+        return self.username
 
 #Customer Model
 class Customer(models.Model):
@@ -38,7 +33,7 @@ class Customer(models.Model):
         db_table = 'customer'
 
     def __str__(self):
-        return self.user.name
+        return self.user.username
 
 #Vehicle Model
 class Vehicle(models.Model):
@@ -92,14 +87,16 @@ class Booking(models.Model):
     )
     service = models.ForeignKey(
         Service,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='bookings'
     )
     vehicle = models.ForeignKey(
         Vehicle,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='bookings'
     )
 
-    booking_date = models.DateField(default=timezone.now)
+    booking_date = models.DateTimeField(auto_now_add=True)
     preferred_date = models.DateField(blank=True, null=True)
     scheduled_date = models.DateField(blank=True, null=True)
     status = models.CharField(
