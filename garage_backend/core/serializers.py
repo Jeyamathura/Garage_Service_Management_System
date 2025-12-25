@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import User, Customer, Vehicle, Service, Booking, Invoice
 
-#User Serializer
+# -------------------
+# User Serializer
+# -------------------
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -17,7 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
             'last_login'
         ]
 
-#Customer Serializer
+# -------------------
+# Customer Serializer
+# -------------------
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -30,38 +34,47 @@ class CustomerSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at'
         ]
+        read_only_fields = ['created_at', 'updated_at']
 
-#Vehicle Serializer
+# -------------------
+# Vehicle Serializer
+# -------------------
 class VehicleSerializer(serializers.ModelSerializer):
     customer = CustomerSerializer(read_only=True)
     customer_id = serializers.PrimaryKeyRelatedField(
-        queryset=Customer.objects.all(), source='customer', write_only=True
+        queryset=Customer.objects.all(), source='customer', write_only=True, required=False
     )
 
     class Meta:
         model = Vehicle
         fields = ['id', 'vehicle_number', 'vehicle_type', 'customer', 'customer_id', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
 
-#Service Serializer
+# -------------------
+# Service Serializer
+# -------------------
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ['id', 'service_name', 'description', 'price', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
 
-#Booking Serializer
+# -------------------
+# Booking Serializer
+# -------------------
 class BookingSerializer(serializers.ModelSerializer):
     customer = CustomerSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
     vehicle = VehicleSerializer(read_only=True)
 
     customer_id = serializers.PrimaryKeyRelatedField(
-        queryset=Customer.objects.all(), source='customer', write_only=True
+        queryset=Customer.objects.all(), source='customer', write_only=True, required=False
     )
     service_id = serializers.PrimaryKeyRelatedField(
-        queryset=Service.objects.all(), source='service', write_only=True
+        queryset=Service.objects.all(), source='service', write_only=True, required=False
     )
     vehicle_id = serializers.PrimaryKeyRelatedField(
-        queryset=Vehicle.objects.all(), source='vehicle', write_only=True
+        queryset=Vehicle.objects.all(), source='vehicle', write_only=True, required=False
     )
 
     class Meta:
@@ -73,12 +86,15 @@ class BookingSerializer(serializers.ModelSerializer):
             'booking_date', 'preferred_date', 'scheduled_date',
             'status', 'created_at', 'updated_at'
         ]
+        read_only_fields = ['booking_date', 'created_at', 'updated_at']
 
-#Invoice Serializer
+# -------------------
+# Invoice Serializer
+# -------------------
 class InvoiceSerializer(serializers.ModelSerializer):
     booking = BookingSerializer(read_only=True)
     booking_id = serializers.PrimaryKeyRelatedField(
-        queryset=Booking.objects.all(), source='booking', write_only=True
+        queryset=Booking.objects.all(), source='booking', write_only=True, required=False
     )
 
     class Meta:
@@ -88,3 +104,4 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'total_amount', 'payment_status', 'invoice_date',
             'created_at', 'updated_at'
         ]
+        read_only_fields = ['created_at', 'updated_at']
