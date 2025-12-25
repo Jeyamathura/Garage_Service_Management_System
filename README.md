@@ -40,7 +40,7 @@ Add AUTH_USER_MODEL = 'core.User' after INSTALLED_APPS in settings.py
 
 -------------------------------------------------------------------------------
 DATABASE CONNECTION
--------------------------------------------------------------------------------
+_______________________________________________________________________________
 To connect to MySQL, we need to install MySQL client for Python
 	pip install mysqlclient
 
@@ -82,8 +82,7 @@ DATABASES = {
         },
     }
 }
---------------------------------------------------------------------------------
-
+_____________________________________________________________________________________
 Verify Django can see MySQL
 	python manage.py check
 
@@ -96,4 +95,7 @@ Apply migrations to MySQL
 
 Run the Django development server
 	python manage.py runserver
+
+Verify Django is running
+	http://127.0.0.1:8000/
 
