@@ -1,0 +1,60 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==============================
+# Django
+# ==============================
+db.sqlite3
+*.log
+local_settings.py
+
+# ==============================
+# Virtual Environment
+# ==============================
+venv/
+env/
+.venv/
+
+# ==============================
+# Environment variables
+# ==============================
+.env
+.env.*
+
+# ==============================
+# Static & Media (if generated)
+# ==============================
+staticfiles/
+media/
+
+# ==============================
+# IDE / Editors
+# ==============================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ==============================
+# OS files
+# ==============================
+.DS_Store
+Thumbs.db
+
+# ==============================
+# Testing / Coverage
+# ==============================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# ==============================
+# Migrations (OPTIONAL)
+# Uncomment ONLY if your lecturer/company asks
+# ==============================
+# */migrations/
+# !*/migrations/__init__.py
