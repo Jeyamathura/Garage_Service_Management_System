@@ -33,14 +33,23 @@ class CustomerViewSet(viewsets.ModelViewSet):
 # Vehicle
 # -------------------
 class VehicleViewSet(viewsets.ModelViewSet):
-    queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == 'ADMIN':
+            return Vehicle.objects.all()
+
+        return Vehicle.objects.filter(customer__user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user.customer)
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
             return [IsAuthenticated(), IsCustomer()]
         return [IsAuthenticated()]
-
 
 # -------------------
 # Service Management (Admin)
@@ -55,14 +64,23 @@ class ServiceViewSet(viewsets.ModelViewSet):
 # Booking
 # -------------------
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == 'ADMIN':
+            return Booking.objects.all()
+
+        return Booking.objects.filter(customer__user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user.customer)
 
     def get_permissions(self):
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsCustomer()]
         return [IsAuthenticated(), IsAdmin()]
-
 
 # -------------------
 # Invoice (Admin Only)
@@ -74,7 +92,16 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         booking_id = request.data.get('booking_id')
-        additional_charge = request.data.get('additional_charge', 0)
+
+        try:
+            additional_charge = float(
+                request.data.get('additional_charge', 0)
+            )
+        except ValueError:
+            return Response(
+                {'error': 'Invalid additional_charge'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             booking = Booking.objects.get(id=booking_id)
@@ -84,6 +111,23 @@ class InvoiceViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        #Booking must be completed
+        if booking.status != 'COMPLETED':
+            return Response(
+                {
+                    'error': 'Invoice can be generated only after service completion'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        #Prevent duplicate invoice
+        if hasattr(booking, 'invoice'):
+            return Response(
+                {'error': 'Invoice already exists for this booking'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        #Generate invoice
         invoice = InvoiceService.generate_invoice(
             booking,
             additional_charge
