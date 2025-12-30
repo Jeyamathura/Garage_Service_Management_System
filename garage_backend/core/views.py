@@ -47,7 +47,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
         serializer.save(customer=self.request.user.customer)
 
     def get_permissions(self):
-        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsCustomer()]
         return [IsAuthenticated()]
 
@@ -78,7 +78,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer.save(customer=self.request.user.customer)
 
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.action == 'create':
             return [IsAuthenticated(), IsCustomer()]
         return [IsAuthenticated(), IsAdmin()]
 
