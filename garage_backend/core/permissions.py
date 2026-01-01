@@ -1,27 +1,27 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-
+#-------------------
+# Allow access only to Admin users
+#-------------------
 class IsAdmin(BasePermission):
-    """
-    Allows access only to Admin users.
-    """
-
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.role == 'ADMIN'
-        )
+        return request.user.is_authenticated and request.user.role == 'ADMIN'
 
-
+#-------------------
+# Allow access only to Customer users
+#-------------------
 class IsCustomer(BasePermission):
-    """
-    Allows access only to Customer users.
-    """
-
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.role == 'CUSTOMER'
-        )
+        return request.user.is_authenticated and request.user.role == 'CUSTOMER'
+
+#-------------------
+# Allow read-only access to all authenticated users, write access only to Admin users
+#-------------------
+class IsAdminOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:  
+            return request.user.is_authenticated # Allow authenticated users to read
+        return request.user.is_authenticated and request.user.role == 'ADMIN'   # Allow only admins to write
+    
+    
+
