@@ -1,3 +1,4 @@
+from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from .serializers import (
     ServiceSerializer, BookingSerializer, InvoiceSerializer
 )
 from .permissions import IsAdmin, IsCustomer
-from .services import InvoiceService
+from .services import InvoiceService, BookingService
 
 
 # -------------------
@@ -74,13 +75,50 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         return Booking.objects.filter(customer__user=user)
 
+    def get_permissions(self):
+        if self.action in ['create', 'list', 'retrieve']:
+            return [IsAuthenticated()]
+        return [IsAuthenticated(), IsAdmin()]
+
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user.customer)
 
-    def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated(), IsCustomer()]
-        return [IsAuthenticated(), IsAdmin()]
+    # -------------------
+    # Booking transitions
+    # -------------------
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def approve(self, request, pk=None):
+        booking = self.get_object()
+        scheduled_date = request.data.get('scheduled_date')
+
+        if not scheduled_date:
+            return Response(
+                {'error': 'scheduled_date is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        BookingService.approve_booking(booking, scheduled_date)
+        return Response(self.get_serializer(booking).data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def reject(self, request, pk=None):
+        booking = self.get_object()
+        BookingService.reject_booking(booking)
+        return Response(self.get_serializer(booking).data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def start(self, request, pk=None):
+        booking = self.get_object()
+        BookingService.start_service(booking)
+        return Response(self.get_serializer(booking).data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def complete(self, request, pk=None):
+        booking = self.get_object()
+        BookingService.complete_service(booking)
+        return Response(self.get_serializer(booking).data)
+
 
 # -------------------
 # Invoice (Admin Only)
