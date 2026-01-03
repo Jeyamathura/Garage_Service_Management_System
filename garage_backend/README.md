@@ -148,6 +148,8 @@ python -m venv venv
 venv\Scripts\activate
 # Linux / Mac
 source venv/bin/activate
+#or
+.\venv\Scripts\Activate.ps1
 ```
 3. Install dependencies inside venv:
 ```bash
