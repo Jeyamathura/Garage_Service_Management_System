@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, Customer, Vehicle, Service, Booking, Invoice
 
 # -------------------
@@ -216,3 +217,16 @@ class InvoiceSerializer(serializers.ModelSerializer):
             self.fields['booking_id'].queryset = Booking.objects.filter(
                 customer__user=request.user
             )
+
+# -------------------
+# Token Serializer
+# -------------------
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['role'] = user.role  # your custom User model has role
+
+        return token
