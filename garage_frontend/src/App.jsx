@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
+import { Navigate } from "react-router-dom";
 import PrivateRoute from "./auth/PrivateRoute";
 import RoleRoute from "./auth/RoleRoute";
 
@@ -12,6 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
 
           <Route
