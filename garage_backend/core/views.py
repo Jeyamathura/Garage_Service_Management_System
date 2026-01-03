@@ -10,7 +10,7 @@ from .serializers import (
     UserSerializer, CustomerSerializer, VehicleSerializer,
     ServiceSerializer, BookingSerializer, InvoiceSerializer
 )
-from .permissions import IsAdmin, IsCustomer
+from .permissions import IsAdmin, IsCustomer, IsAdminOrOwner
 from .services import InvoiceService, BookingService
 
 
@@ -24,14 +24,20 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # -------------------
-# Customer Management (Admin)
+# Customer Management
 # -------------------
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdminOrOwner]
 
-
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "ADMIN":
+            return Customer.objects.all()
+        else:
+            # Customer sees only their own profile
+            return Customer.objects.filter(user=user)
+        
 # -------------------
 # Vehicle
 # -------------------

@@ -23,5 +23,22 @@ class IsAdminOrReadOnly(BasePermission):
             return request.user.is_authenticated # Allow authenticated users to read
         return request.user.is_authenticated and request.user.role == 'ADMIN'   # Allow only admins to write
     
-    
+#-------------------
+# Allow access if user is admin, or if user is accessing their own Customer record
+#-------------------
+class IsAdminOrOwner(BasePermission):
+    """
+    Admin can access any customer.
+    Customer can access only their own profile (read/write).
+    """
 
+    def has_permission(self, request, view):
+        # Allow all authenticated users to access list or create (filtered in get_queryset)
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        # Admin has full access
+        if request.user.role == 'ADMIN':
+            return True
+        # Customer can only access their own record
+        return obj.user == request.user
