@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
-
+from .serializers import CustomerRegistrationSerializer
 from .models import User, Customer, Vehicle, Service, Booking, Invoice
 from .serializers import (
     UserSerializer, CustomerSerializer, VehicleSerializer,
@@ -12,7 +12,8 @@ from .serializers import (
 )
 from .permissions import IsAdmin, IsCustomer, IsAdminOrOwner
 from .services import InvoiceService, BookingService
-
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
 
 # -------------------
 # User (Admin only)
@@ -187,3 +188,10 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 # -------------------
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+#-------------------
+# Customer Registration
+#-------------------
+class CustomerRegisterView(generics.CreateAPIView):
+    serializer_class = CustomerRegistrationSerializer
+    permission_classes = [AllowAny] # Allow anyone to register

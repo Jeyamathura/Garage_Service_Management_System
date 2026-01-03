@@ -230,3 +230,30 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['role'] = user.role  # your custom User model has role
 
         return token
+
+# -------------------
+# Customer Registration Serializer
+# -------------------
+class CustomerRegistrationSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username")
+    password = serializers.CharField(source="user.password", write_only=True)
+    first_name = serializers.CharField(source="user.first_name")
+    last_name = serializers.CharField(source="user.last_name")
+    email = serializers.EmailField(source="user.email")
+
+    class Meta:
+        model = Customer
+        fields = ["username", "password", "first_name", "last_name", "email"]
+
+    def create(self, validated_data):
+        user_data = validated_data.pop("user")
+        user = User.objects.create_user(
+            username=user_data["username"],
+            password=user_data["password"],
+            first_name=user_data.get("first_name", ""),
+            last_name=user_data.get("last_name", ""),
+            email=user_data.get("email", ""),
+            role="CUSTOMER",
+        )
+        customer = Customer.objects.create(user=user, **validated_data)
+        return customer

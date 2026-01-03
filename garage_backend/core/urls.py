@@ -1,4 +1,5 @@
 from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 from .views import (
     UserViewSet,
     CustomerViewSet,
@@ -6,6 +7,7 @@ from .views import (
     ServiceViewSet,
     BookingViewSet,
     InvoiceViewSet,
+    CustomerRegisterView,
 )
 
 router = DefaultRouter()
@@ -16,4 +18,7 @@ router.register(r'services', ServiceViewSet, basename='service')
 router.register(r'bookings', BookingViewSet, basename='booking')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),  # keep all router URLs
+    path('auth/register/', CustomerRegisterView.as_view(), name='customer-register'),  # now under /api/
+]

@@ -5,6 +5,7 @@ import PrivateRoute from "./auth/PrivateRoute";
 import RoleRoute from "./auth/RoleRoute";
 
 import Login from "./pages/auth/Login";
+import SignUp from "./pages/auth/SignUp";
 import AdminDashboard from "./pages/admin/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
 
           <Route
             path="/admin/dashboard"
