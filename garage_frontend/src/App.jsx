@@ -4,8 +4,10 @@ import { Navigate } from "react-router-dom";
 import PrivateRoute from "./auth/PrivateRoute";
 import RoleRoute from "./auth/RoleRoute";
 
+import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
+
 import AdminDashboard from "./pages/admin/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 
@@ -14,10 +16,13 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
 
+          {/* Protected Routes */}
+          {/* Admin Routes */}
           <Route
             path="/admin/dashboard"
             element={
@@ -29,6 +34,7 @@ function App() {
             }
           />
 
+          {/* Customer Routes */}
           <Route
             path="/customer/dashboard"
             element={
