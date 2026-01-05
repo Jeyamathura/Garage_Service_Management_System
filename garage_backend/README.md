@@ -1,88 +1,265 @@
-# Garage Service Management System - Backend Setup
 
-## Table of Contents
-1. Prerequisites
-2. Python & Django Installation
-3. Project Setup
-4. Database Configuration
-5. Migrations
-6. Django REST Framework & Serializers
-7. API Views & ViewSets
-8. Virtual Environment Setup
-9. SimpleJWT Installation
-10. Locking Dependencies
-11. Create Superuser
+----------
 
----
+# 🚗 Garage Service Management System - Backend Setup
 
-## Prerequisites
-- Python installed
+## 📌 Technology Stack
+
+-   **Django**
+    
+-   **Django REST Framework (DRF)**
+    
+-   **MySQL**
+    
+-   **JWT Authentication (SimpleJWT)**
+    
+-   **CORS Headers (Frontend Integration)**
+    
+
+----------
+## 📑 Table of Contents
+
+1.  Prerequisites
+    
+2.  Virtual Environment Setup
+    
+3.  Python & Django Installation
+    
+4.  Project Initialization
+    
+5.  Application Structure
+    
+6.  Custom User Model & Role Management
+    
+7.  Database Configuration (MySQL)
+    
+8.  Migrations
+    
+9.  Django REST Framework (DRF) & Serializers
+    
+10.  API Views & ViewSets
+    
+11.  JWT Authentication (SimpleJWT)
+    
+12.  Customer Registration Flow
+    
+13.  Superuser / Admin Setup
+    
+14.  CORS Configuration (Frontend Integration)
+    
+15.  Locking Dependencies (`requirements.txt`)
+    
+16.  System Verification Checklist
+    
+
+----------
+
+## 1. Prerequisites
+
+Ensure the following are installed:
+
+-   Python **3.10+**
+    
+-   MySQL Server
+    
+-   `pip` (Python package manager)
+    
+
+Verify Python installation:
+
 ```bash
 python --version
+
 ```
 
-## Python & Django Installation
-1. Install Django:
+> Optional: Ensure `pip` is up to date:
+
 ```bash
-pip install django
-# or
-python -m pip install Django
+python -m pip install --upgrade pip
+
 ```
-2. Verify Django installation:
+
+----------
+
+## 2. Virtual Environment Setup
+
+Create a **virtual environment** (isolated Python environment for your project):
+
+```bash
+python -m venv venv
+
+```
+
+Activate the environment:
+
+```bash
+# Windows
+venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
+
+# PowerShell alternative
+.\venv\Scripts\Activate.ps1
+
+```
+
+Confirm Python points to venv:
+
+```bash
+where python   # Windows
+which python   # Linux/macOS
+
+```
+
+----------
+
+## 3. Python & Django Installation
+
+Install Django and essential packages:
+
+```bash
+pip install django djangorestframework python-dotenv
+
+```
+
+Verify Django installation:
+
 ```bash
 django-admin --version
+
 ```
 
-## Project Setup
-1. Go to your project folder:
+----------
+
+## 4. Project Initialization
+
+1.  Navigate to your project folder:
+    
+
 ```bash
 cd Garage_Service_Management_System
+
 ```
-2. Create Django backend project:
+
+2.  Create Django backend project:
+    
+
 ```bash
-python -m django startproject garage_backend
+django-admin startproject garage_backend
 cd garage_backend
+
 ```
-3. Create main app:
+
+3.  Create main app:
+    
+
 ```bash
 python manage.py startapp core
+
 ```
-4. Add the `core` app to `INSTALLED_APPS` in `garage_backend/settings.py`:
+
+4.  Add the app to `INSTALLED_APPS` in `garage_backend/settings.py`:
+    
+
 ```python
 INSTALLED_APPS = [
     ...,
     'core',
+    'rest_framework',
 ]
-```
-5. Create models in `garage_backend/core/models.py` in the following order:
-   1. User (custom AbstractUser)
-   2. Customer
-   3. Vehicle
-   4. Service
-   5. Booking
-   6. Invoice
-6. For custom authentication, add after `INSTALLED_APPS` in `settings.py`:
-```python
-AUTH_USER_MODEL = 'core.User'
+
 ```
 
-## Database Configuration
-1. Install MySQL client for Python:
+----------
+
+## 5. Application Structure
+
+```
+garage_backend/
+│
+├── garage_backend/
+│   ├── settings.py
+│   ├── urls.py
+│   └── __init__.py
+│
+├── core/
+│   ├── models.py
+│   ├── serializers.py
+│   ├── views.py
+│   ├── permissions.py
+│   ├── urls.py
+│   └── __init__.py
+│
+└── manage.py
+
+```
+
+----------
+
+## 6. Custom User Model & Role Management
+
+1.  Extend `AbstractUser` to create a **custom User model** in `core/models.py`.
+    
+2.  Define **user roles**:
+    
+
+```python
+ROLE_CHOICES = (
+    ('ADMIN', 'Admin'),
+    ('CUSTOMER', 'Customer'),
+)
+
+```
+
+3.  Add to `settings.py`:
+    
+
+```python
+AUTH_USER_MODEL = 'core.User'
+
+```
+
+> Benefits:
+> 
+> -   Email, first/last names preserved
+>     
+> -   JWT authentication works seamlessly
+>     
+> -   Role-based access enforced
+>     
+
+----------
+
+## 7. Database Configuration (MySQL)
+
+### 7.1 Install MySQL Client
+
+Django **requires a Python MySQL driver** to talk to MySQL:
+
 ```bash
 pip install mysqlclient
+
 ```
+
 > Without this, Django will raise:
+> 
 > ```
-django.core.exceptions.ImproperlyConfigured
-Error loading MySQLdb module
-```
-2. Create MySQL database:
+> django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module
+> 
+> ```
+
+### 7.2 Create Database
+
 ```sql
 CREATE DATABASE garage_service_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
+
 ```
-3. Recommended `DATABASES` configuration in `settings.py`:
+
+### 7.3 Configure `settings.py`
+
 ```python
 DATABASES = {
     'default': {
@@ -98,103 +275,280 @@ DATABASES = {
         },
     }
 }
+
 ```
-4. Verify Django can see MySQL:
+
+### 7.4 Verify Connection
+
 ```bash
 python manage.py check
+
 ```
 
-## Migrations
-1. Create migrations from your models:
+----------
+
+## 8. Migrations
+
+1.  Create migrations from your models:
+    
+
 ```bash
 python manage.py makemigrations
+
 ```
-2. Apply migrations to MySQL:
+
+2.  Apply migrations to the database:
+    
+
 ```bash
 python manage.py migrate
-```
-3. Run the development server:
-```bash
-python manage.py runserver
+
 ```
 
-## Django REST Framework & Serializers
-1. Install DRF:
+3.  Start development server:
+    
+
 ```bash
-pip install djangorestframework
+python manage.py runserver
+
 ```
-2. Add to `INSTALLED_APPS`:
+
+----------
+
+## 9. Django REST Framework (DRF) & Serializers
+
+1.  Create **serializers** for each model to convert ORM objects to JSON:
+    
+
+-   `UserSerializer`
+    
+-   `CustomerSerializer`
+    
+-   `VehicleSerializer`
+    
+-   `ServiceSerializer`
+    
+-   `BookingSerializer`
+    
+-   `InvoiceSerializer`
+    
+
+2.  Add DRF settings in `settings.py` (already included in `INSTALLED_APPS`):
+    
+
 ```python
-INSTALLED_APPS = [
-    ...,
-    'rest_framework',
-]
-```
-3. Create serializers for all models (`User`, `Customer`, `Vehicle`, `Service`, `Booking`, `Invoice`) to convert model data to JSON.
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
-## API Views & ViewSets
-- Use DRF ViewSets for CRUD operations:
-  - Combines list, create, retrieve, update, delete
-  - Example: `ModelViewSet` automatically provides all operations without writing separate views.
-
-## Virtual Environment Setup (Industry Standard)
-1. Create virtual environment (once):
-```bash
-python -m venv venv
-```
-2. Activate (every time you work):
-```bash
-# Windows
-venv\Scripts\activate
-# Linux / Mac
-source venv/bin/activate
-#or
-.\venv\Scripts\Activate.ps1
-```
-3. Install dependencies inside venv:
-```bash
-pip install django mysqlclient python-dotenv djangorestframework djangorestframework-simplejwt
-```
-4. Run Django inside venv:
-```bash
-python manage.py runserver
-```
-5. Confirm you are using venv:
-```bash
-where python   # should point to ...\venv\Scripts\python.exe
 ```
 
-## SimpleJWT Installation
-1. Install JWT authentication:
+----------
+
+## 10. API Views & ViewSets
+
+-   Use DRF **`ModelViewSet`** for CRUD:
+    
+
+```python
+from rest_framework import viewsets
+from .models import Vehicle
+from .serializers import VehicleSerializer
+
+class VehicleViewSet(viewsets.ModelViewSet):
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer
+
+```
+
+-   Automatically provides: `list`, `create`, `retrieve`, `update`, `delete`.
+    
+-   Route in `core/urls.py`:
+    
+
+```python
+from rest_framework.routers import DefaultRouter
+from .views import VehicleViewSet
+
+router = DefaultRouter()
+router.register('vehicles', VehicleViewSet)
+urlpatterns = router.urls
+
+```
+
+-   Include in project-level `urls.py`:
+    
+
+```python
+path('api/', include('core.urls')),
+
+```
+
+----------
+
+## 11. JWT Authentication (SimpleJWT)
+
+1.  Install:
+    
+
 ```bash
 pip install djangorestframework-simplejwt
-```
-2. Verify installation:
-```bash
-python -c "import rest_framework_simplejwt; print('OK')"
-# Output: OK
+
 ```
 
-## Locking Dependencies
-1. Create `requirements.txt` to lock dependencies:
+2.  Add JWT authentication class in `settings.py` (already added in DRF settings above).
+    
+3.  JWT endpoints:
+    
+
+```python
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+path('api/token/', TokenObtainPairView.as_view()),
+path('api/token/refresh/', TokenRefreshView.as_view()),
+
+```
+
+> Custom token view can also return **user role** along with access/refresh tokens.
+
+----------
+
+## 12. Customer Registration Flow
+
+-   Customers **do not manually create accounts**.
+    
+-   Registration endpoint:
+    
+
+```http
+POST /auth/register/
+
+```
+
+-   Internal workflow:
+    
+
+1.  Creates `User` with role `CUSTOMER`
+    
+2.  Links `Customer` profile
+    
+3.  Returns JWT tokens for immediate login
+    
+
+----------
+
+## 13. Superuser / Admin Setup
+
+```bash
+python manage.py createsuperuser
+
+```
+
+-   Example credentials:
+    
+    -   Username: `admin`
+        
+    -   Email: `kindloop.org@gmail.com`
+        
+    -   Password: `admin123`
+        
+-   Admin can:
+    
+    -   Manage users and customers
+        
+    -   View all bookings
+        
+    -   Create services
+        
+    -   Generate invoices
+        
+
+----------
+
+## 14. CORS Configuration (Frontend Integration)
+
+1.  Install package:
+    
+
+```bash
+pip install django-cors-headers
+
+```
+
+2.  Add to `INSTALLED_APPS`:
+    
+
+```python
+'corsheaders',
+
+```
+
+3.  Add middleware (must be **first**):
+    
+
+```python
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    ...
+]
+
+```
+
+4.  Allow frontend origin (development):
+    
+
+```python
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+```
+
+> Optional shortcut (development only):
+
+```python
+CORS_ALLOW_ALL_ORIGINS = True
+
+```
+
+----------
+
+## 15. Locking Dependencies
+
+1.  Freeze installed packages:
+    
+
 ```bash
 pip freeze > requirements.txt
+
 ```
-2. To recreate the same environment:
+
+2.  Recreate environment later:
+    
+
 ```bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
 ```
 
-## Create Superuser
-1. Run:
-```bash
-python manage.py createsuperuser
-```
-2. Enter credentials:
-- Username: `admin`
-- Email: `kindloop.org@gmail.com`
-- Password: `admin123`
-3. Authentication is JWT-based.
+----------
 
+## 16. System Verification Checklist
+
+✔ Custom user model enabled  
+✔ MySQL connection verified (`mysqlclient` installed)  
+✔ JWT authentication functional  
+✔ Role-based access enforced (`ADMIN` / `CUSTOMER`)  
+✔ Customer self-registration working  
+✔ Admin-only endpoints protected  
+✔ DRF serializers and ViewSets functional  
+✔ API routing complete  
+✔ CORS configured correctly  
+✔ Frontend-ready REST API
+
+----------
