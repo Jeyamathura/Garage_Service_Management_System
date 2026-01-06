@@ -11,6 +11,8 @@ import SignUp from "./pages/auth/SignUp";
 import AdminDashboard from "./pages/admin/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 
+import MainLayout from "./components/layouts/MainLayout";
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,7 +30,9 @@ function App() {
             element={
               <PrivateRoute>
                 <RoleRoute role="ADMIN">
-                  <AdminDashboard />
+                  <MainLayout>
+                    <AdminDashboard />
+                  </MainLayout>
                 </RoleRoute>
               </PrivateRoute>
             }
@@ -40,7 +44,9 @@ function App() {
             element={
               <PrivateRoute>
                 <RoleRoute role="CUSTOMER">
-                  <CustomerDashboard />
+                  <MainLayout>
+                    <CustomerDashboard />
+                  </MainLayout>
                 </RoleRoute>
               </PrivateRoute>
             }

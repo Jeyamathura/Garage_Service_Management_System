@@ -7,7 +7,9 @@ export const getAccessToken = () =>
   localStorage.getItem("access");
 
 export const clearTokens = () => {
-  localStorage.clear();
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+  localStorage.removeItem("role");
 };
 
 export const getRefreshToken = () =>
