@@ -1,6 +1,11 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect} from "react";
 import { loginRequest } from "../api/auth.api";
-import { setTokens, clearTokens } from "../utils/token";
+import {jwtDecode} from "jwt-decode";
+import {
+  setTokens,
+  clearTokens,
+  getAccessToken,
+} from "../utils/token";
 
 const AuthContext = createContext(null);
 
@@ -8,6 +13,23 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  //Restore Session on Refresh
+  useEffect(() => {
+    const token = getAccessToken();
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser({ username: decoded.username });
+        setRole(decoded.role);
+        setIsAuthenticated(true);
+      } catch (err) {
+        clearTokens();
+      }
+    }
+    setIsLoading(false);
+  }, []);
 
   const login = async (username, password) => {
     try {
@@ -42,6 +64,8 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
     setIsAuthenticated(false);
   };
+
+  if (isLoading) return null;
 
   return (
     <AuthContext.Provider
