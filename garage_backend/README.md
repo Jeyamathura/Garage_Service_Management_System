@@ -1,9 +1,11 @@
 
 ----------
 
-# 🚗 Garage Service Management System - Backend Setup
+# Garage Service Management System - Backend Setup
 
-## 📌 Technology Stack
+## Technology Stack
+
+-   **Python 3.10+**
 
 -   **Django**
     
@@ -11,13 +13,15 @@
     
 -   **MySQL**
     
--   **JWT Authentication (SimpleJWT)**
+-   **JWT Authentication (djangorestframework-simplejwt)**
     
 -   **CORS Headers (Frontend Integration)**
     
 
 ----------
 ## 📑 Table of Contents
+
+0.  Purpose of This Document    
 
 1.  Prerequisites
     
@@ -52,6 +56,21 @@
 16.  System Verification Checklist
     
 
+## 0. Purpose of This Document
+
+This guide explains exactly how to set up the backend for the Garage Service Management System using:
+
+-   Django
+
+-   Django REST Framework (DRF)
+
+-   MySQL
+
+-   JWT Authentication (SimpleJWT)
+
+-   CORS for frontend integration
+
+It assumes no prior Django project exists.
 ----------
 
 ## 1. Prerequisites
@@ -72,7 +91,7 @@ python --version
 
 ```
 
-> Optional: Ensure `pip` is up to date:
+> Recommended: Ensure `pip` is up to date:
 
 ```bash
 python -m pip install --upgrade pip
