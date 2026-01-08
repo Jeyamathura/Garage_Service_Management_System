@@ -14,10 +14,14 @@ import CustomerLayout from "./components/layouts/CustomerLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 
+import Headers from "./components/layouts/Header";
+import Footer from "./components/layouts/Footer";
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Headers />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -54,6 +58,7 @@ function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        <Footer />
       </AuthProvider>
     </BrowserRouter>
   );
