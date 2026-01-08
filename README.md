@@ -1,73 +1,137 @@
-Check Python Installation
-	python --version
+---
 
-Install Django
-	pip install django
-	or
-	python -m pip install Django
+# Garage Backend – Django Setup
 
-Verify Django Installation
-	django-admin --version
+This repository contains the backend setup for a Django-based project using:
 
-Go to the Project Folder
-	cd Garage_Service_Management_System
+* Django
+* Django REST Framework
+* MySQL (optional)
+* JWT Authentication
+* CORS support
 
-Create Django Project (Backend)
-	python -m django startproject garage_backend
+---
 
-Enter Project Directory - garage_backend
-	cd garage_backend
+## Prerequisites
 
-Create Main App
-	python manage.py startapp core
+Ensure the following are installed:
 
-Add the 'core' app to garage_backend/garage_backend/INSTALLED_APPS
+* Python **3.10+**
+* pip (comes with Python)
+* VS Code (recommended)
 
-In garage_backend\core\models.py
-	from django.db import models
-	add from django.utils import timezone
+Verify Python:
 
-Add the models in garage_backend\core\models.py in the following order
-	1.User
-	2.Customer
-	3.Vehicle
-	4.Service
-	5.Booking
-	6.Invoice
+```bash
+python --version
+```
 
-For authentication AbstractUser is used, and there is a custom logic on top.
-Add AUTH_USER_MODEL = 'core.User' after INSTALLED_APPS in settings.py
+---
 
--------------------------------------------------------------------------------
-DATABASE CONNECTION
-_______________________________________________________________________________
-To connect to MySQL, we need to install MySQL client for Python
-	pip install mysqlclient
+## Step 1: Upgrade pip
 
-Without installing MySQL client, you will get an error
-	django.core.exceptions.ImproperlyConfigured
-	Error loading MySQLdb module
+```bash
+python -m pip install --upgrade pip
+```
 
-SQL query for creating Database in MySQL:
+---
+
+## Step 2: Create and Activate Virtual Environment
+
+Create virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate it (Windows):
+
+```bash
+venv\Scripts\activate
+```
+
+Confirm Python path:
+
+```bash
+where python
+```
+
+You should see the Python path pointing to the `venv` directory.
+
+---
+
+## Step 3: Install Core Dependencies
+
+```bash
+pip install django djangorestframework python-dotenv
+```
+
+Verify Django installation:
+
+```bash
+django-admin --version
+```
+
+---
+
+## Step 4: Navigate to Django Project
+
+```bash
+cd garage_backend
+```
+
+---
+
+## Step 5: Install Database & Auth Dependencies
+
+### MySQL Driver
+
+```bash
+pip install mysqlclient
+```
+
+> If this fails on Windows, you can use `pymysql` as a fallback.
+
+---
+
+### JWT Authentication
+
+```bash
+pip install djangorestframework-simplejwt
+```
+
+---
+
+### CORS Headers
+
+```bash
+pip install django-cors-headers
+```
+
+---
+
+## Installed Packages Summary
+
+* `django`
+* `djangorestframework`
+* `python-dotenv`
+* `mysqlclient`
+* `djangorestframework-simplejwt`
+* `django-cors-headers`
+
+---
+
+## Create Database in MySQL
+
+```
 CREATE DATABASE garage_service_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
+```
 
-Some best practices:
-	1.Add OPTIONS
-		MySQL + Django works best with explicit SQL mode.
-		Prevents silent data truncation
-		Enforces stricter validation
-		'OPTIONS': {
-   			'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-		}
-	2.Use UTF-8 explicitly
-		This avoids encoding issues later (especially with React input).
-		'OPTIONS': {
-    		'charset': 'utf8mb4',
-		}
-
-Recommended development configuration: (Replace the USER, PASSWORD if it varies from yours)
+* Configure database settings in `settings.py`
+-	Edit this if there're any changes
+```
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -82,20 +146,53 @@ DATABASES = {
         },
     }
 }
-_____________________________________________________________________________________
-Verify Django can see MySQL
-	python manage.py check
 
-Create migrations from your models
-	cd garage_backend
-	python manage.py makemigrations
+```
+* Verify Connection
 
-Apply migrations to MySQL
-	python manage.py migrate
+```
+python manage.py check
+```
+---
 
-Run the Django development server
-	python manage.py runserver
+## Migrations
 
-Verify Django is running
-	http://127.0.0.1:8000/
+* Create migrations from your models:
 
+```
+python manage.py makemigrations
+```
+
+* Apply migrations to the database:
+
+```
+python manage.py migrate
+```
+
+---
+
+## Run Development Server
+
+```bash
+python manage.py runserver
+```
+
+Open in browser:
+
+```
+http://127.0.0.1:8000/
+```
+
+---
+
+## Notes
+
+* Always activate the virtual environment before running Django commands.
+
+---
+
+## Troubleshooting
+
+* If `where python` does not point to `venv`, re-activate the virtual environment.
+
+---
