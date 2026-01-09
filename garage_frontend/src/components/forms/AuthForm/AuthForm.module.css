@@ -1,0 +1,46 @@
+/* Title */
+.title {
+  color: teal;
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 25px;
+  opacity: 0.85;
+}
+
+/* Error message */
+.error {
+  color: #dc2626;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+/* Form layout */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Bottom text (login/signup switch) */
+.linkText {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.linkText a {
+  color: teal;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.linkText a:hover {
+  text-decoration: underline;
+}
