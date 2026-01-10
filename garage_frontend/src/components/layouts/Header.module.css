@@ -1,0 +1,43 @@
+.header {
+  background-color: rgba(0, 128, 128, 0.95); /* teal with slight opacity */
+  color: #ffffff;
+  padding: 25px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px); /* subtle glass effect */
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  margin: 8px 0 20px;
+  font-size: 1.05rem;
+  font-style: italic;
+  opacity: 0.85; /* subtle transparency */
+}
+
+/* Optional link styles (if used elsewhere in header) */
+.link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 6px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
