@@ -1,43 +1,86 @@
 .header {
-  background-color: rgba(0, 128, 128, 0.95); /* teal with slight opacity */
-  color: #ffffff;
-  padding: 25px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(5px); /* subtle glass effect */
+  background: linear-gradient(180deg, #0f172a 0%, #115e59 100%);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .container {
-  width: 90%;
-  max-width: 1200px;
+  width: 95%;
+  max-width: 1400px;
   margin: 0 auto;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
   margin: 0;
-  font-size: 2.2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: white;
 }
 
 .subtitle {
-  margin: 8px 0 20px;
-  font-size: 1.05rem;
-  font-style: italic;
-  opacity: 0.85; /* subtle transparency */
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 300;
 }
 
-/* Optional link styles (if used elsewhere in header) */
-.link {
-  color: #ffffff;
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navLink {
+  color: #ccfbf1;
+  /* Teal 100 */
   text-decoration: none;
+  font-size: 0.9rem;
   font-weight: 500;
-  padding: 8px 15px;
-  border-radius: 6px;
-  transition: background 0.3s, transform 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.navLinkActive {
+  background-color: white;
+  color: #0d9488;
+  /* Teal 600 */
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.logoutBtn {
+  margin-left: 1rem;
+  padding: 0.5rem 1.25rem;
+  background-color: #0f172a;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: #1e293b;
+  transform: translateY(-1px);
 }
