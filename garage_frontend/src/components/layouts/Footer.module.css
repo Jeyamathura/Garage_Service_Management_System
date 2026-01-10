@@ -1,0 +1,35 @@
+.footer {
+  background-color: rgba(0, 128, 128, 0.95);
+  color: #ffffff;
+  padding: 20px 0;
+  margin-top: 50px;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.footerContainer {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.footerText {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.footerLinks {
+  display: flex;
+  justify-content: center;
+}
+
+.footerMock {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
