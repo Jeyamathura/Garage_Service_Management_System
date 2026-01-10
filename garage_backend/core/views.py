@@ -133,9 +133,14 @@ class BookingViewSet(viewsets.ModelViewSet):
 # Invoice (Admin Only)
 # -------------------
 class InvoiceViewSet(viewsets.ModelViewSet):
-    queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'ADMIN':
+            return Invoice.objects.all()
+        return Invoice.objects.filter(booking__customer__user=user)
 
     def create(self, request, *args, **kwargs):
         booking_id = request.data.get('booking_id')
