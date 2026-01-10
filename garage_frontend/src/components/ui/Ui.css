@@ -1,0 +1,275 @@
+/* Teal Design System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Teal Palette */
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-300: #5eead4;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-800: #115e59;
+  --teal-900: #134e4a;
+
+  /* Semantic Colors */
+  --primary-color: var(--teal-600);
+  --primary-hover: var(--teal-700);
+  --primary-active: var(--teal-800);
+
+  --secondary-color: #64748b;
+  --secondary-hover: #475569;
+
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+
+  /* Backgrounds */
+  --bg-app: var(--teal-50);
+  --bg-surface: #ffffff;
+  --bg-sidebar: var(--teal-900);
+
+  /* Borders */
+  --border-color: #e2e8f0;
+  --border-focus: var(--teal-500);
+
+  /* Text */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-on-primary: #ffffff;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  /* Modern, clean font */
+  background-color: var(--bg-app);
+  color: var(--text-main);
+}
+
+/* Card & Containers */
+.card {
+  background: var(--bg-surface);
+  border-radius: 1rem;
+  /* More rounded */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--teal-100);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--teal-900);
+  letter-spacing: -0.025em;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  /* Larger padding for better touch/feel */
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal-600) 0%, var(--teal-500) 100%);
+  color: var(--text-on-primary);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--teal-700) 0%, var(--teal-600) 100%);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--teal-50);
+  color: var(--teal-700);
+  border-color: var(--teal-200);
+}
+
+.btn-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-danger:hover {
+  background-color: #fecaca;
+}
+
+.btn-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+}
+
+/* Form Styling */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--teal-800);
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  /* More comfortable padding */
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  color: var(--text-main);
+}
+
+.form-input:focus {
+  outline: none;
+  background-color: white;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 4px var(--teal-100);
+  /* Teal glow */
+}
+
+/* Table Design */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  /* Allows border radius on rows/cells */
+  border-spacing: 0;
+  margin-top: 1.5rem;
+}
+
+.data-table th {
+  background-color: var(--teal-50);
+  color: var(--teal-800);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid var(--teal-100);
+}
+
+.data-table td {
+  padding: 1rem 1.5rem;
+  background-color: white;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.data-table tr:hover td {
+  background-color: var(--teal-50);
+  /* Subtle teal highlight */
+}
+
+.data-table tr:first-child th:first-child {
+  border-top-left-radius: 1rem;
+}
+
+.data-table tr:first-child th:last-child {
+  border-top-right-radius: 1rem;
+}
+
+.data-table tr:last-child td:first-child {
+  border-bottom-left-radius: 1rem;
+}
+
+.data-table tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}
+
+/* Modal */
+.modal-overlay {
+  backdrop-filter: blur(8px);
+  /* Stronger blur */
+  background-color: rgba(19, 78, 74, 0.4);
+  /* Teal tinted dim */
+}
+
+.modal-content {
+  background: white;
+  border: 1px solid var(--teal-100);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  /* Extra Spacious */
+}
+
+.modal-header h2 {
+  color: var(--teal-900);
+  font-size: 1.5rem;
+}
+
+/* Badges */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.badge-pending {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #ffedd5;
+}
+
+.badge-approved {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-completed {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.badge-rejected {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge-paid {
+  background-color: var(--teal-100);
+  color: var(--teal-800);
+  border: 1px solid var(--teal-200);
+}
