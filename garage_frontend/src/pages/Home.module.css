@@ -1,0 +1,73 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 24px;
+    margin: 80px auto;
+    max-width: 600px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0fdfa;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #134e4a;
+    /* Teal 900 */
+    margin-bottom: 16px;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: #4b5563;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.button {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1 1 150px;
+}
+
+.loginButton {
+    background-color: #0d9488;
+    /* Teal 600 */
+    color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.3);
+}
+
+.loginButton:hover {
+    background-color: #0f766e;
+    transform: translateY(-2px);
+}
+
+.signupButton {
+    background-color: #fff;
+    color: #0d9488;
+    border: 2px solid #0d9488;
+}
+
+.signupButton:hover {
+    background-color: #f0fdfa;
+    transform: translateY(-2px);
+}
