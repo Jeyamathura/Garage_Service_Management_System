@@ -214,20 +214,12 @@ h4 {
 }
 
 /* Modal */
-.modal-overlay {
-  backdrop-filter: blur(8px);
-  /* Stronger blur */
-  background-color: rgba(19, 78, 74, 0.4);
-  /* Teal tinted dim */
-}
-
 .modal-content {
   background: white;
   border: 1px solid var(--teal-100);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   border-radius: 1.5rem;
   padding: 3rem;
-  /* Extra Spacious */
 }
 
 .modal-header h2 {
