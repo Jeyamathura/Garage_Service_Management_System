@@ -1,4 +1,3 @@
-import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -10,7 +9,6 @@ const CustomerLayout = () => {
   return (
     <div className="main-layout">
       <div className="layout-content">
-        <Sidebar role="CUSTOMER" />
         <main>
           <Outlet />
         </main>
