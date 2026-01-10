@@ -30,12 +30,22 @@ class UserSerializer(serializers.ModelSerializer):
 # -------------------
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    
+    # Define writeable fields for nested update
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.EmailField(source='user.email', required=False)
+    username = serializers.CharField(source='user.username', required=False)
 
     class Meta:
         model = Customer
         fields = [
             'id',
             'user',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
             'phone',
             'created_at',
             'updated_at',
@@ -46,6 +56,25 @@ class CustomerSerializer(serializers.ModelSerializer):
             'created_at', 
             'updated_at',
         ]
+
+    def update(self, instance, validated_data):
+        # Extract user data if present
+        user_data = validated_data.pop('user', {})
+        
+        # Update Customer fields
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.save()
+
+        # Update User fields
+        user = instance.user
+        if user_data:
+            user.first_name = user_data.get('first_name', user.first_name)
+            user.last_name = user_data.get('last_name', user.last_name)
+            user.email = user_data.get('email', user.email)
+            user.username = user_data.get('username', user.username)
+            user.save()
+
+        return instance
 
     def validate_phone(self, value):
         if not value.isdigit():
