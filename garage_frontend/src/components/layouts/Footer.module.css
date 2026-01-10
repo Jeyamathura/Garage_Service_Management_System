@@ -1,10 +1,13 @@
 .footer {
-  background-color: rgba(0, 128, 128, 0.95);
-  color: #ffffff;
-  padding: 20px 0;
-  margin-top: 50px;
-  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
+  /* Using deeply nested background to match theme */
+  background: linear-gradient(180deg, #115e59 0%, #0f172a 100%);
+  color: #e2e8f0;
+  /* Lighter text for contrast */
+  padding: 1.5rem 0;
+  margin-top: auto;
+  /* Push to bottom if content is short */
+  width: 100%;
+  border-top: 1px solid #134e4a;
 }
 
 .footerContainer {
@@ -15,13 +18,15 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .footerText {
   margin: 0;
   font-size: 0.9rem;
-  opacity: 0.85;
+  font-weight: 300;
+  color: #cbd5e1;
+  /* Slate 300 */
 }
 
 .footerLinks {
@@ -31,5 +36,8 @@
 
 .footerMock {
   font-size: 0.85rem;
-  opacity: 0.9;
+  color: #99f6e4;
+  /* Teal 200 for highlights */
+  font-weight: 500;
+  letter-spacing: 0.025em;
 }
