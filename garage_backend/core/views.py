@@ -10,7 +10,7 @@ from .serializers import (
     UserSerializer, CustomerSerializer, VehicleSerializer,
     ServiceSerializer, BookingSerializer, InvoiceSerializer
 )
-from .permissions import IsAdmin, IsCustomer, IsAdminOrOwner
+from .permissions import IsAdmin, IsCustomer, IsAdminOrOwner, IsAdminOrReadOnly
 from .services import InvoiceService, BookingService
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
@@ -67,7 +67,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
 
 # -------------------
