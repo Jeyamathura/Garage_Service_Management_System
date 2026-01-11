@@ -15,8 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'role',
-            'created_at',
-            'updated_at',
         ]
         read_only_fields = [
             'id',
@@ -30,13 +28,13 @@ class UserSerializer(serializers.ModelSerializer):
 # -------------------
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    
-    # Define writeable fields for nested update
-    first_name = serializers.CharField(source='user.first_name', required=False)
-    last_name = serializers.CharField(source='user.last_name', required=False)
-    email = serializers.EmailField(source='user.email', required=False)
-    username = serializers.CharField(source='user.username', required=False)
 
+    username = serializers.CharField(source='user.username', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    date_joined = serializers.DateTimeField(source='user.date_joined', read_only=True)
+    
     class Meta:
         model = Customer
         fields = [
@@ -47,8 +45,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'phone',
-            'created_at',
-            'updated_at',
+            'date_joined',
         ]
         read_only_fields = [
             'id',
@@ -58,21 +55,24 @@ class CustomerSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance, validated_data):
-        # Extract user data if present
-        user_data = validated_data.pop('user', {})
-        
         # Update Customer fields
         instance.phone = validated_data.get('phone', instance.phone)
         instance.save()
 
-        # Update User fields
+        # Update User fields manually
         user = instance.user
-        if user_data:
-            user.first_name = user_data.get('first_name', user.first_name)
-            user.last_name = user_data.get('last_name', user.last_name)
-            user.email = user_data.get('email', user.email)
-            user.username = user_data.get('username', user.username)
-            user.save()
+        
+        # Check for each field in validated_data
+        if 'first_name' in validated_data:
+            user.first_name = validated_data['first_name']
+        if 'last_name' in validated_data:
+            user.last_name = validated_data['last_name']
+        if 'email' in validated_data:
+            user.email = validated_data['email']
+        if 'username' in validated_data:
+            user.username = validated_data['username']
+            
+        user.save()
 
         return instance
 
@@ -92,7 +92,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         queryset=Customer.objects.all(),
         source='customer',
         write_only=True,
-        required=True  # Added to ensure customer is always provided
+        required=False  # Changed to False to allow Customers to create without sending ID
     )
 
     class Meta:
@@ -103,8 +103,6 @@ class VehicleSerializer(serializers.ModelSerializer):
             'customer_id',
             'vehicle_number',
             'vehicle_type',
-            'created_at',
-            'updated_at',
         ]
         read_only_fields = [
             'id',
@@ -129,8 +127,6 @@ class ServiceSerializer(serializers.ModelSerializer):
             'service_name',
             'description',
             'price',
-            'created_at',
-            'updated_at',
         ]
         read_only_fields = [
             'id',
@@ -175,8 +171,6 @@ class BookingSerializer(serializers.ModelSerializer):
             'preferred_date',
             'scheduled_date',
             'status',
-            'created_at',
-            'updated_at',
         ]
         read_only_fields = [
             'id',
@@ -228,8 +222,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'total_amount',
             'payment_status',
             'invoice_date',
-            'created_at',
-            'updated_at',
         ]
         read_only_fields = [
             'total_amount',
@@ -272,7 +264,13 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ["username", "password", "first_name", "last_name", "email"]
+        fields = [
+            "username", 
+            "password", 
+            "first_name", 
+            "last_name", 
+            "email"
+            ]
 
     def create(self, validated_data):
         user_data = validated_data.pop("user")
