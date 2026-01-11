@@ -265,3 +265,9 @@ h4 {
   color: var(--teal-800);
   border: 1px solid var(--teal-200);
 }
+
+.badge-in_progress {
+  background-color: #f3f4f6;
+  color: var(--teal-700);
+  border: 1px solid var(--teal-200);
+}
