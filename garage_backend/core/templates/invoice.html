@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice #{{ invoice.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 150px;
+        }
+        .billing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .billing-table th, .billing-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .billing-table th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            text-align: right;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="header">
+            <h1>GARAGE SERVICE INVOICE</h1>
+            <p>Invoice #{{ invoice.id }}</p>
+            <p>Date: {{ invoice.invoice_date|date:"Y-m-d" }}</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Customer Details</div>
+            <div class="info-row">
+                <div class="info-label">Name:</div>
+                <div>{{ customer.user.username }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Contact:</div>
+                <div>{{ customer.phone }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Vehicle Details</div>
+            <div class="info-row">
+                <div class="info-label">Type:</div>
+                <div>{{ vehicle.vehicle_type }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Number:</div>
+                <div>{{ vehicle.vehicle_number }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Service Details</div>
+            <div class="info-row">
+                <div class="info-label">Service:</div>
+                <div>{{ service.service_name }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Description:</div>
+                <div>{{ service.description }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Billing Details</div>
+            <table class="billing-table">
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td>{{ service.service_name }}</td>
+                    <td>Rs. {{ service.price }}</td>
+                </tr>
+                {% if additional_charge > 0 %}
+                <tr>
+                    <td>Additional Charges</td>
+                    <td>Rs. {{ additional_charge }}</td>
+                </tr>
+                {% endif %}
+                <tr class="total-row">
+                    <td>Total</td>
+                    <td>Rs. {{ invoice.total_amount }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Payment Details</div>
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div>{{ invoice.payment_status }}</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your business!</p>
+            <p>Garage Service Management System</p>
+        </div>
+    </div>
+</body>
+</html>
