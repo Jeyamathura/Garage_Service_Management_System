@@ -12,7 +12,17 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import CustomerLayout from "./components/layouts/CustomerLayout";
 
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminServices from "./pages/admin/Services";
+import AdminCustomers from "./pages/admin/Customers";
+import AdminBookings from "./pages/admin/Bookings";
+import AdminInvoices from "./pages/admin/Invoices";
+
 import CustomerDashboard from "./pages/customer/Dashboard";
+import CustomerBookings from "./pages/customer/Bookings";
+import CustomerVehicles from "./pages/customer/Vehicles";
+import CustomerServices from "./pages/customer/Services";
+import CustomerProfile from "./pages/customer/Profile";
+import CustomerInvoices from "./pages/customer/Invoices";
 
 import Headers from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
@@ -21,44 +31,51 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Headers />
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+        <div className="main-layout">
+          <Headers />
+          <div className="layout-content">
+            <main style={{ padding: 0 }}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
 
-          {/* Protected Routes */}
-          <Route element={<PrivateRoute />}>
-            
-            {/* Admin Routes */}
-            <Route element={<RoleRoute role="ADMIN" />}>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="services" element={<div>Services Management Page</div>} />
-                <Route path="customers" element={<div>Customers Management Page</div>} />
-                <Route path="bookings" element={<div>Bookings Management Page</div>} />
-                <Route path="invoices" element={<div>Invoices Management Page</div>} />
-              </Route>
-            </Route>
+                {/* Protected Routes */}
+                <Route element={<PrivateRoute />}>
 
-            {/* Customer Routes */}
-            <Route element={<RoleRoute role="CUSTOMER" />}>
-              <Route path="/customer" element={<CustomerLayout />}>
-                <Route path="dashboard" element={<CustomerDashboard />} />
-                <Route path="bookings" element={<div>My Bookings Page</div>} />
-                <Route path="profile" element={<div>My Profile Page</div>} />
-                <Route path="vehicles" element={<div>My Vehicles Page</div>} />
-                <Route path="services" element={<div>Services Views</div>} />
-              </Route>
-            </Route>
+                  {/* Admin Routes */}
+                  <Route element={<RoleRoute role="ADMIN" />}>
+                    <Route path="/admin" element={<AdminLayout />}>
+                      <Route path="dashboard" element={<AdminDashboard />} />
+                      <Route path="services" element={<AdminServices />} />
+                      <Route path="customers" element={<AdminCustomers />} />
+                      <Route path="bookings" element={<AdminBookings />} />
+                      <Route path="invoices" element={<AdminInvoices />} />
+                    </Route>
+                  </Route>
 
-          </Route>
+                  {/* Customer Routes */}
+                  <Route element={<RoleRoute role="CUSTOMER" />}>
+                    <Route path="/customer" element={<CustomerLayout />}>
+                      <Route path="dashboard" element={<CustomerDashboard />} />
+                      <Route path="bookings" element={<CustomerBookings />} />
+                      <Route path="vehicles" element={<CustomerVehicles />} />
+                      <Route path="services" element={<CustomerServices />} />
+                      <Route path="profile" element={<CustomerProfile />} />
+                      <Route path="invoices" element={<CustomerInvoices />} />
+                    </Route>
+                  </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-        <Footer />
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </main>
+          </div>
+          <Footer />
+        </div>
       </AuthProvider>
     </BrowserRouter>
   );
