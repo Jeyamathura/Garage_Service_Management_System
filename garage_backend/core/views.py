@@ -29,38 +29,40 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 # -------------------
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrOwner]
-
+    permission_classes = [IsAuthenticated]
+    
     def get_queryset(self):
         user = self.request.user
-        if user.role == "ADMIN":
+        if user.role == 'ADMIN':
             return Customer.objects.all()
-        else:
-            # Customer sees only their own profile
-            return Customer.objects.filter(user=user)
+        return Customer.objects.filter(user=user)
+    
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        serializer = self.get_serializer(request.user.customer)
+        return Response(serializer.data)
+
         
 # -------------------
 # Vehicle
 # -------------------
 class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
-
+    permission_classes = [IsAuthenticated, IsAdminOrOwner]
+    
     def get_queryset(self):
         user = self.request.user
-
         if user.role == 'ADMIN':
             return Vehicle.objects.all()
-
         return Vehicle.objects.filter(customer__user=user)
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user.customer)
 
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsCustomer()]
-        return [IsAuthenticated()]
-
+    def perform_update(self, serializer):
+        vehicle = self.get_object()
+        serializer.save(customer=vehicle.customer)
+        
 # -------------------
 # Service Management (Admin)
 # -------------------
@@ -130,7 +132,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
 
 # -------------------
-# Invoice (Admin Only)
+# Invoice
 # -------------------
 class InvoiceViewSet(viewsets.ModelViewSet):
     serializer_class = InvoiceSerializer
@@ -187,6 +189,16 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(invoice)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def download_pdf(self, request, pk=None):
+        from django.http import HttpResponse
+        invoice = self.get_object()
+        pdf_content = InvoiceService.generate_invoice_pdf(invoice)
+        
+        response = HttpResponse(pdf_content, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.id}.txt"'
+        return response
 
 # -------------------
 # Token Authentication
