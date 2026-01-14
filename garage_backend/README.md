@@ -52,8 +52,10 @@
 14.  CORS Configuration (Frontend Integration)
     
 15.  Locking Dependencies (`requirements.txt`)
+
+16.  xhtml to pdf
     
-16.  System Verification Checklist
+17.  System Verification Checklist
     
 
 ## 0. Purpose of This Document
@@ -557,7 +559,16 @@ pip install -r requirements.txt
 
 ----------
 
-## 16. System Verification Checklist
+## 16. xhtml to pdf
+
+```bash
+pip install xhtml2pdf
+
+```
+
+----------
+
+## 17. System Verification Checklist
 
 ✔ Custom user model enabled  
 ✔ MySQL connection verified (`mysqlclient` installed)  
