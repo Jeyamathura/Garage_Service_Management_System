@@ -13,6 +13,7 @@ const Input = ({ label, type = 'text', name, value, onChange, placeholder, requi
                 placeholder={placeholder}
                 required={required}
                 disabled={disabled}
+                readOnly={disabled}
             />
         </div>
     );
