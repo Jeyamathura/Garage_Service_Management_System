@@ -191,10 +191,28 @@ class BookingSerializer(serializers.ModelSerializer):
         preferred = attrs.get('preferred_date')
         scheduled = attrs.get('scheduled_date')
 
+         # Get current date in the configured timezone
+        from django.utils import timezone
+        today = timezone.now().date()
+    
+        # Validate preferred date is not in the past
+        if preferred and preferred < today:
+            raise serializers.ValidationError({
+                'preferred_date': 'Preferred date cannot be in the past.'
+            })
+        
+        # Validate scheduled date is not in the past
+        if scheduled and scheduled < today:
+            raise serializers.ValidationError({
+                'scheduled_date': 'Scheduled date cannot be in the past.'
+            })
+        
+        # Validate scheduled date is not before preferred date
         if scheduled and preferred and scheduled < preferred:
-            raise serializers.ValidationError(
-                "Scheduled date cannot be before preferred date."
-            )
+            raise serializers.ValidationError({
+                'scheduled_date': 'Scheduled date cannot be before preferred date.'
+            })
+        
         return attrs
 
     def create(self, validated_data):
