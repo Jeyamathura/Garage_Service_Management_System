@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from '../../api/vehicle.api';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
@@ -21,6 +22,7 @@ const Vehicles = () => {
             setVehicles(data);
         } catch (error) {
             console.error("Failed to fetch vehicles", error);
+            toast.error("Failed to load vehicles");
         }
     };
 
@@ -54,8 +56,10 @@ const Vehicles = () => {
             }
             fetchVehicles();
             handleCloseModal();
+            toast.success(currentVehicle ? "Vehicle updated successfully" : "Vehicle added successfully");
         } catch (error) {
             console.error("Failed to save vehicle", error);
+            toast.error("Failed to save vehicle");
         }
     };
 
@@ -64,8 +68,10 @@ const Vehicles = () => {
             try {
                 await deleteVehicle(id);
                 fetchVehicles();
+                toast.success("Vehicle deleted successfully");
             } catch (error) {
                 console.error("Failed to delete vehicle", error);
+                toast.error("Failed to delete vehicle");
             }
         }
     };

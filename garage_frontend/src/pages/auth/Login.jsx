@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useAuth } from "../../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../../components/forms/AuthForm/AuthForm";
@@ -13,6 +14,7 @@ const Login = () => {
   const handleLogin = async (data) => {
     try {
       const role = await login(data.username, data.password);
+      toast.success("Welcome back!");
       navigate(role === "ADMIN" ? "/admin/dashboard" : "/customer/dashboard");
     } catch {
       setError("Login failed. Check credentials.");

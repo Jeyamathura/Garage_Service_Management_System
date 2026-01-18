@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { registerCustomer } from "../../api/auth.api";
 import AuthForm from "../../components/forms/AuthForm/AuthForm";
@@ -19,6 +20,7 @@ const SignUp = () => {
         email: data.email,
       });
       navigate("/login");
+      toast.success("Account created! Please login to continue.");
     } catch {
       setError("Registration failed. Try again.");
     }

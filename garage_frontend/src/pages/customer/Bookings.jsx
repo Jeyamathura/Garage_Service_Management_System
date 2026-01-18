@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { getBookings, createBooking } from "../../api/booking.api";
 import { getVehicles } from "../../api/vehicle.api";
 import { getServices } from "../../api/service.api";
@@ -29,6 +30,7 @@ const MyBookings = () => {
       setBookings(data);
     } catch (error) {
       console.error("Failed to fetch bookings", error);
+      toast.error("Failed to load bookings");
     }
   };
 
@@ -48,7 +50,7 @@ const MyBookings = () => {
       setServices(sData);
       setIsModalOpen(true);
     } catch (error) {
-      alert(
+      toast.error(
         "Failed to load options. Please ensure you have added a vehicle first."
       );
     }
@@ -69,9 +71,10 @@ const MyBookings = () => {
       await createBooking(formData);
       fetchBookings();
       handleCloseModal();
+      toast.success("Booking requested successfully!");
     } catch (error) {
       console.error("Failed to create booking", error);
-      alert(
+      toast.error(
         "Failed to create booking. Make sure you selected a valid date."
       );
     }

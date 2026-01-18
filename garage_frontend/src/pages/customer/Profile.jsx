@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   getCustomerProfile,
   updateCustomerProfile,
@@ -41,6 +42,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.error("Failed to fetch profile", error);
+      toast.error("Failed to load profile data");
     } finally {
       setLoading(false);
     }
@@ -60,9 +62,10 @@ const Profile = () => {
       await updateCustomerProfile(profile.id, formData);
       setIsEditing(false);
       fetchProfile();
-      alert("Profile updated successfully");
+      toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Failed to update profile", error);
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { getServices, createService, updateService, deleteService } from '../../api/service.api';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
@@ -21,6 +22,7 @@ const Services = () => {
             setServices(data);
         } catch (error) {
             console.error("Failed to fetch services", error);
+            toast.error("Failed to load services");
         }
     };
 
@@ -58,8 +60,10 @@ const Services = () => {
             }
             fetchServices();
             handleCloseModal();
+            toast.success(currentService ? "Service updated successfully" : "Service created successfully");
         } catch (error) {
             console.error("Failed to save service", error);
+            toast.error("Failed to save service");
         }
     };
 
@@ -68,8 +72,10 @@ const Services = () => {
             try {
                 await deleteService(id);
                 fetchServices();
+                toast.success("Service deleted successfully");
             } catch (error) {
                 console.error("Failed to delete service", error);
+                toast.error("Failed to delete service");
             }
         }
     };

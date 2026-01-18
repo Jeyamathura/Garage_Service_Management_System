@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { getInvoices, updateInvoiceStatus, downloadInvoicePDF } from '../../api/invoice.api';
 import Table from '../../components/ui/Table';
 import Modal from '../../components/ui/Modal';
@@ -20,6 +21,7 @@ const Invoices = () => {
             setInvoices(data);
         } catch (error) {
             console.error("Failed to fetch invoices", error);
+            toast.error("Failed to load invoices");
         }
     };
 
@@ -27,8 +29,10 @@ const Invoices = () => {
         try {
             await updateInvoiceStatus(id, newStatus);
             fetchInvoices();
+            toast.success("Invoice status updated");
         } catch (error) {
             console.error("Failed to update invoice status", error);
+            toast.error("Failed to update status");
         }
     };
 
@@ -41,8 +45,10 @@ const Invoices = () => {
         if (selectedInvoice) {
             try {
                 await downloadInvoicePDF(selectedInvoice.id);
+                toast.success("Download started");
             } catch (error) {
                 console.error("Failed to download PDF", error);
+                toast.error("Failed to download PDF");
             }
         }
     };

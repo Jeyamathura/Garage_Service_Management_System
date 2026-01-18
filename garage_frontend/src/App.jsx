@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./auth/AuthContext";
 
 import PrivateRoute from "./auth/PrivateRoute";
@@ -75,6 +76,7 @@ function App() {
             </main>
           </div>
           <Footer />
+          <Toaster position="top-center" reverseOrder={false} />
         </div>
       </AuthProvider>
     </BrowserRouter>

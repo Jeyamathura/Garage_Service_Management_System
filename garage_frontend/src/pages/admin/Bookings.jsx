@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
   getBookings,
@@ -31,6 +32,7 @@ const Bookings = () => {
       setBookings(data);
     } catch (error) {
       console.error("Failed to fetch bookings", error);
+      toast.error("Failed to load bookings");
     }
   };
 
@@ -46,8 +48,9 @@ const Bookings = () => {
       await approveBooking(selectedBooking.id, scheduledDate);
       setIsApproveModalOpen(false);
       fetchBookings();
+      toast.success("Booking approved successfully");
     } catch (error) {
-      alert("Failed to approve booking");
+      toast.error("Failed to approve booking");
     }
   };
 
@@ -55,6 +58,7 @@ const Bookings = () => {
     if (window.confirm("Reject this booking?")) {
       await rejectBooking(id);
       fetchBookings();
+      toast.success("Booking rejected");
     }
   };
 
@@ -62,6 +66,7 @@ const Bookings = () => {
     if (window.confirm("Start service for this booking?")) {
       await startBooking(id);
       fetchBookings();
+      toast.success("Service started");
     }
   };
 
@@ -69,13 +74,14 @@ const Bookings = () => {
     if (window.confirm("Mark service as completed?")) {
       await completeBooking(id);
       fetchBookings();
+      toast.success("Booking completed");
     }
   };
 
   const handleGenerateInvoice = async (bookingId) => {
     const booking = bookings.find((b) => b.id === bookingId);
     if (booking.invoice) {
-      alert("Invoice already exists for this booking!");
+      toast.error("Invoice already exists for this booking!");
       navigate("../invoices"); // Redirect to invoices page
       return;
     }
@@ -83,11 +89,11 @@ const Bookings = () => {
     if (window.confirm("Generate invoice for this booking?")) {
       try {
         await createInvoice(bookingId);
-        alert("Invoice generated successfully!");
+        toast.success("Invoice generated successfully!");
         navigate("../invoices"); // Redirect after successful generation
       } catch (error) {
         navigate("../invoices");
-        alert(error.response?.data?.error || "Failed to generate invoice");
+        toast.error(error.response?.data?.error || "Failed to generate invoice");
       }
     }
   };
