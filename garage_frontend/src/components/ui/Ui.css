@@ -248,6 +248,12 @@ h4 {
   border: 1px solid #bbf7d0;
 }
 
+.badge-in_progress {
+  background-color: #f3f4f6;
+  color: var(--teal-700);
+  border: 1px solid var(--teal-200);
+}
+
 .badge-completed {
   background-color: #f0f9ff;
   color: #0369a1;
@@ -260,14 +266,14 @@ h4 {
   border: 1px solid #fecaca;
 }
 
+.badge-cancelled {
+  background-color: #fef2f2;
+  color: #4f1212;
+  border: 1px solid #fecaca;
+}
+
 .badge-paid {
   background-color: var(--teal-100);
   color: var(--teal-800);
-  border: 1px solid var(--teal-200);
-}
-
-.badge-in_progress {
-  background-color: #f3f4f6;
-  color: var(--teal-700);
   border: 1px solid var(--teal-200);
 }
