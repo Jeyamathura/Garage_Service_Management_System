@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getBookings } from "../../api/booking.api";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
 import styles from "../Dashboard.module.css";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [upcoming, setUpcoming] = useState(null);
 
   useEffect(() => {
@@ -32,8 +34,14 @@ const Dashboard = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Welcome to Your Garage Dashboard</h1>
-
+      <h1 className={styles.title}>
+        Welcome,{" "}
+        <span className={styles.username}>
+          <div className="border-b border-gray-200">
+            {user?.username}
+          </div>
+        </span>
+      </h1>
       {upcoming ? (
         <div className={styles.cardBlue}>
           <h2
