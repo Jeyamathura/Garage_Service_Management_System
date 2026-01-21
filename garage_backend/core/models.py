@@ -127,6 +127,17 @@ class Invoice(models.Model):
         on_delete=models.CASCADE,
         related_name='invoice'
     )
+    additional_charges = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0,
+        help_text="Additional charges beyond the base service price"
+    )
+    additional_charges_description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Description or reason for additional charges"
+    )
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(
         max_length=20,
