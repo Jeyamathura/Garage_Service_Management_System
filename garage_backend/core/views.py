@@ -157,6 +157,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        additional_charge_description = request.data.get('additional_charge_description', '')
+
         try:
             booking = Booking.objects.get(id=booking_id)
         except Booking.DoesNotExist:
@@ -184,7 +186,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         #Generate invoice
         invoice = InvoiceService.generate_invoice(
             booking,
-            additional_charge
+            additional_charge,
+            additional_charge_description
         )
 
         serializer = self.get_serializer(invoice)
