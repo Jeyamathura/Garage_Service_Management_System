@@ -1,154 +1,272 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Invoice #{{ invoice.id }}</title>
     <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: #333;
+            font-family: 'Courier', 'Courier New', monospace;
+            font-size: 13px;
+            color: #111827;
+            background-color: #ffffff;
         }
-        .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
-            border: 1px solid #ddd;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        .outer-border {
+            border: 1px solid #d1d5db;
+            padding: 16px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
-        .header h1 {
-            margin: 0;
-            color: #333;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        .info-row {
-            display: flex;
-            margin-bottom: 5px;
-        }
-        .info-label {
-            font-weight: bold;
-            width: 150px;
-        }
-        .billing-table {
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
-        .billing-table th, .billing-table td {
-            border: 1px solid #ddd;
+
+        /* Header */
+        .invoice-header {
+            border-bottom: 1px double #d1d5db;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .invoice-header h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .invoice-sub-title {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 0;
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            margin-bottom: 12px;
+        }
+
+        .info-grid th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #374151;
+            padding-bottom: 8px;
+        }
+
+        .info-grid td {
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        /* Items Table */
+        .items-table {
+            margin-bottom: 16px;
+        }
+
+        .items-table thead th {
+            border-bottom: 1px solid #d1d5db;
             padding: 8px;
             text-align: left;
-        }
-        .billing-table th {
-            background-color: #f2f2f2;
-        }
-        .total-row {
             font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .items-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .items-table .amount-col {
+            text-align: right;
+            width: 100px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* Totals Box */
+        .totals-box {
+            padding: 8px 12px;
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .total-label {
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .total-value {
+            font-weight: bold;
+            font-size: 16px;
+            color: #059669;
             text-align: right;
         }
+
+        /* Payment Section */
+        .payment-status-section {
+            padding: 8px;
+            background-color: #f9fafb;
+            margin-bottom: 12px;
+        }
+
+        .payment-status-section p {
+            margin: 4px 0;
+        }
+
+        .status-badge {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .status-paid {
+            color: #047857;
+            background-color: #d1fae5;
+        }
+
+        .status-pending {
+            color: #b45309;
+            background-color: #fef3c7;
+        }
+
+        /* Footer */
         .footer {
-            margin-top: 30px;
             text-align: center;
-            font-size: 12px;
-            color: #777;
+            border-top: 1px double #d1d5db;
+            padding-top: 8px;
+            margin-top: 12px;
+        }
+
+        .footer p {
+            font-size: 11px;
+            margin: 4px 0;
         }
     </style>
 </head>
+
 <body>
-    <div class="invoice-container">
-        <div class="header">
-            <h1>GARAGE SERVICE INVOICE</h1>
-            <p>Invoice #{{ invoice.id }}</p>
-            <p>Date: {{ invoice.invoice_date|date:"Y-m-d" }}</p>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Customer Details</div>
-            <div class="info-row">
-                <div class="info-label">Name:</div>
-                <div>{{ customer.user.username }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Contact:</div>
-                <div>{{ customer.phone }}</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Vehicle Details</div>
-            <div class="info-row">
-                <div class="info-label">Type:</div>
-                <div>{{ vehicle.vehicle_type }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Number:</div>
-                <div>{{ vehicle.vehicle_number }}</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Service Details</div>
-            <div class="info-row">
-                <div class="info-label">Service:</div>
-                <div>{{ service.service_name }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Description:</div>
-                <div>{{ service.description }}</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Billing Details</div>
-            <table class="billing-table">
+    <div class="outer-border">
+        <!-- Header -->
+        <div class="invoice-header">
+            <table>
                 <tr>
-                    <th>Description</th>
-                    <th>Amount</th>
-                </tr>
-                <tr>
-                    <td>{{ service.service_name }}</td>
-                    <td>Rs. {{ service.price }}</td>
-                </tr>
-                {% if additional_charge > 0 %}
-                <tr>
-                    <td>Additional Charges</td>
-                    <td>Rs. {{ additional_charge }}</td>
-                </tr>
-                {% endif %}
-                <tr class="total-row">
-                    <td>Total</td>
-                    <td>Rs. {{ invoice.total_amount }}</td>
+                    <td>
+                        <h2>GARAGE NAME</h2>
+                        <div class="invoice-sub-title">Vehicle Service Invoice</div>
+                    </td>
+                    <td class="header-meta">
+                        <div>Invoice : {{ invoice.id }}</div>
+                        <div>Date: {{ invoice.invoice_date }}</div>
+                        <div>Booking ID: {{ booking.id }}</div>
+                    </td>
                 </tr>
             </table>
         </div>
 
-        <div class="section">
-            <div class="section-title">Payment Details</div>
-            <div class="info-row">
-                <div class="info-label">Status:</div>
-                <div>{{ invoice.payment_status }}</div>
-            </div>
+        <!-- Billing Info -->
+        <div class="info-grid">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">BILL TO</th>
+                        <th style="width: 50%;">VEHICLE DETAILS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div>{{ customer.user.username }}</div>
+                            <div>{{ customer.phone }}</div>
+                        </td>
+                        <td>
+                            <div>{{ vehicle.vehicle_type }}</div>
+                            <div>{{ vehicle.vehicle_number }}</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>DESCRIPTION</th>
+                    <th class="amount-col">AMOUNT (RS.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>{{ service.service_name }}</strong>
+                        <div class="muted">{{ service.description }}</div>
+                    </td>
+                    <td class="amount-col">{{ service.price }}</td>
+                </tr>
+                {% if invoice.additional_charges > 0 %}
+                <tr>
+                    <td>
+                        Additional Charges
+                        {% if invoice.additional_charges_description %}
+                        <div class="muted">{{ invoice.additional_charges_description }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="amount-col">{{ invoice.additional_charges }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Totals Box -->
+        <div class="totals-box">
+            <table>
+                <tr>
+                    <td class="total-label">TOTAL AMOUNT</td>
+                    <td class="total-value">Rs. {{ invoice.total_amount }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Payment Meta -->
+        <div class="payment-status-section">
+            <p>
+                <strong>Status:</strong>
+                <span
+                    class="status-badge {% if invoice.payment_status == 'PAID' %}status-paid{% else %}status-pending{% endif %}">
+                    {{ invoice.payment_status }}
+                </span>
+            </p>
+            <p><strong>Payment Method:</strong> Cash / Card</p>
+        </div>
+
+        <!-- Footer -->
         <div class="footer">
-            <p>Thank you for your business!</p>
-            <p>Garage Service Management System</p>
+            <p>Authorized Signature</p>
+            <p>Thank you for choosing our service.</p>
         </div>
     </div>
 </body>
+
 </html>
