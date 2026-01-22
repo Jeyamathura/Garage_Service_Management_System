@@ -61,7 +61,7 @@ class BookingService:
 class InvoiceService:
 
     @staticmethod
-    def generate_invoice(booking: Booking, additional_charge=0):
+    def generate_invoice(booking: Booking, additional_charge=0, additional_charge_description=''):
         if booking.status != 'COMPLETED':
             raise ValueError('Invoice can be generated only after service completion')
 
@@ -70,6 +70,8 @@ class InvoiceService:
 
         return Invoice.objects.create(
             booking=booking,
+            additional_charges=Decimal(additional_charge),
+            additional_charges_description=additional_charge_description,
             total_amount=total_amount,
             payment_status='PENDING'
         )
@@ -92,9 +94,6 @@ class InvoiceService:
         vehicle = booking.vehicle
         service = booking.service
     
-        # Calculate additional charges
-        additional_charge = invoice.total_amount - service.price
-    
         # Prepare context for template
         context = {
             'invoice': invoice,
@@ -102,7 +101,6 @@ class InvoiceService:
             'vehicle': vehicle,
             'service': service,
             'booking': booking,
-            'additional_charge': additional_charge
         }
     
         # Render HTML template
