@@ -237,6 +237,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'id',
             'booking',
             'booking_id',
+            'additional_charges',
+            'additional_charges_description',
             'total_amount',
             'payment_status',
             'invoice_date',
@@ -256,6 +258,28 @@ class InvoiceSerializer(serializers.ModelSerializer):
             self.fields['booking_id'].queryset = Booking.objects.filter(
                 customer__user=request.user
             )
+
+    def update(self, instance, validated_data):
+        from decimal import Decimal
+        
+        # Update additional charges fields if provided
+        if 'additional_charges' in validated_data:
+            instance.additional_charges = validated_data.get('additional_charges', instance.additional_charges)
+        
+        if 'additional_charges_description' in validated_data:
+            instance.additional_charges_description = validated_data.get('additional_charges_description', instance.additional_charges_description)
+        
+        # Recalculate total_amount if additional_charges was updated
+        if 'additional_charges' in validated_data:
+            service_price = instance.booking.service.price
+            instance.total_amount = Decimal(service_price) + Decimal(instance.additional_charges)
+        
+        # Update payment_status if provided
+        if 'payment_status' in validated_data:
+            instance.payment_status = validated_data.get('payment_status', instance.payment_status)
+        
+        instance.save()
+        return instance
 
 # -------------------
 # Token Serializer
