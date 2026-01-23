@@ -5,13 +5,25 @@ export const getInvoices = async () => {
     return response.data;
 };
 
-export const createInvoice = async (booking_id, additional_charge = 0) => {
-    const response = await api.post("/invoices/", { booking_id, additional_charge });
+export const createInvoice = async (booking_id, additional_charge = 0, additional_charge_description = '') => {
+    const response = await api.post("/invoices/", {
+        booking_id,
+        additional_charge,
+        additional_charge_description
+    });
     return response.data;
 };
 
 export const updateInvoiceStatus = async (id, payment_status) => {
     const response = await api.patch(`/invoices/${id}/`, { payment_status });
+    return response.data;
+};
+
+export const updateInvoiceCharges = async (id, additional_charges, additional_charges_description) => {
+    const response = await api.patch(`/invoices/${id}/`, {
+        additional_charges,
+        additional_charges_description
+    });
     return response.data;
 };
 
