@@ -15,6 +15,7 @@ import CustomerLayout from "./components/layouts/CustomerLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminServices from "./pages/admin/Services";
 import AdminCustomers from "./pages/admin/Customers";
+import AdminVehicles from "./pages/admin/Vehicles";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminInvoices from "./pages/admin/Invoices";
 
@@ -51,6 +52,7 @@ function App() {
                       <Route path="dashboard" element={<AdminDashboard />} />
                       <Route path="services" element={<AdminServices />} />
                       <Route path="customers" element={<AdminCustomers />} />
+                      <Route path="vehicles" element={<AdminVehicles />} />
                       <Route path="bookings" element={<AdminBookings />} />
                       <Route path="invoices" element={<AdminInvoices />} />
                     </Route>
