@@ -42,6 +42,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user.customer)
         return Response(serializer.data)
 
+    def get_serializer_class(self):
+        if self.action == 'create' and self.request.user.role == 'ADMIN':
+            return CustomerRegistrationSerializer
+        return CustomerSerializer
+
         
 # -------------------
 # Vehicle
@@ -57,7 +62,10 @@ class VehicleViewSet(viewsets.ModelViewSet):
         return Vehicle.objects.filter(customer__user=user)
 
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user.customer)
+        if self.request.user.role == 'ADMIN':
+            serializer.save()
+        else:
+            serializer.save(customer=self.request.user.customer)
 
     def perform_update(self, serializer):
         vehicle = self.get_object()
@@ -92,7 +100,10 @@ class BookingViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated(), IsAdmin()]
 
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user.customer)
+        if self.request.user.role == 'ADMIN':
+            serializer.save()
+        else:
+            serializer.save(customer=self.request.user.customer)
 
     # -------------------
     # Booking transitions
