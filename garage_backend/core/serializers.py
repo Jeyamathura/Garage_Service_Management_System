@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'role',
+            'date_joined',
         ]
         read_only_fields = [
             'id',
@@ -46,12 +47,14 @@ class CustomerSerializer(serializers.ModelSerializer):
             'email',
             'phone',
             'date_joined',
+            'created_at',
         ]
         read_only_fields = [
             'id',
             'user',
             'created_at', 
             'updated_at',
+            'date_joined',
         ]
 
     def update(self, instance, validated_data):
@@ -334,16 +337,39 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
             "phone"
         ]
 
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("A user with this username already exists.")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
+
+    def validate_phone(self, value):
+        # We can reuse the logic from CustomerSerializer or just define it here
+        if not value.isdigit():
+            raise serializers.ValidationError("Phone number should contain only digits.")
+        if len(value) != 10:
+            raise serializers.ValidationError("Phone number should be 10 digits long.")
+        return value
+
     def create(self, validated_data):
         user_data = validated_data.pop("user")
         phone = validated_data.pop("phone", "")
-        user = User.objects.create_user(
-            username=user_data["username"],
-            password=user_data["password"],
-            first_name=user_data.get("first_name", ""),
-            last_name=user_data.get("last_name", ""),
-            email=user_data.get("email", ""),
-            role="CUSTOMER",
-        )
-        customer = Customer.objects.create(user=user, phone=phone, **validated_data)
-        return customer
+        
+        try:
+            user = User.objects.create_user(
+                username=user_data["username"],
+                password=user_data["password"],
+                first_name=user_data.get("first_name", ""),
+                last_name=user_data.get("last_name", ""),
+                email=user_data.get("email", ""),
+                role="CUSTOMER",
+            )
+            customer = Customer.objects.create(user=user, phone=phone)
+            return customer
+        except Exception as e:
+            # Fallback for unexpected errors during creation
+            raise serializers.ValidationError({"error": str(e)})
