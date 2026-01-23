@@ -29,10 +29,10 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
-    username = serializers.CharField(source='user.username', read_only=True)
-    first_name = serializers.CharField(source='user.first_name', read_only=True)
-    last_name = serializers.CharField(source='user.last_name', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
+    username = serializers.CharField(source='user.username', required=False)
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.EmailField(source='user.email', required=False)
     date_joined = serializers.DateTimeField(source='user.date_joined', read_only=True)
     
     class Meta:
@@ -55,24 +55,25 @@ class CustomerSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance, validated_data):
+        # Extract user data if present (it will be under 'user' key due to 'source=user.xxx')
+        user_data = validated_data.pop('user', {})
+        
         # Update Customer fields
         instance.phone = validated_data.get('phone', instance.phone)
         instance.save()
 
-        # Update User fields manually
+        # Update User fields
         user = instance.user
-        
-        # Check for each field in validated_data
-        if 'first_name' in validated_data:
-            user.first_name = validated_data['first_name']
-        if 'last_name' in validated_data:
-            user.last_name = validated_data['last_name']
-        if 'email' in validated_data:
-            user.email = validated_data['email']
-        if 'username' in validated_data:
-            user.username = validated_data['username']
-            
-        user.save()
+        if user_data:
+            if 'first_name' in user_data:
+                user.first_name = user_data['first_name']
+            if 'last_name' in user_data:
+                user.last_name = user_data['last_name']
+            if 'email' in user_data:
+                user.email = user_data['email']
+            if 'username' in user_data:
+                user.username = user_data['username']
+            user.save()
 
         return instance
 
@@ -112,7 +113,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 
     def validate_customer(self, customer):
         request = self.context['request']
-        if customer.user != request.user:
+        if request.user.role != 'ADMIN' and customer.user != request.user:
             raise serializers.ValidationError("You do not own this customer.")
         return customer
 
@@ -157,14 +158,20 @@ class BookingSerializer(serializers.ModelSerializer):
         source='vehicle',
         write_only=True
     )
+    customer_id = serializers.PrimaryKeyRelatedField(
+        queryset=Customer.objects.all(),
+        source='customer',
+        write_only=True,
+        required=False
+    )
 
     class Meta:
         model = Booking
         fields = [
             'id',
-            'customer',
-            'service',
             'service_id',
+            'customer',
+            'customer_id',
             'vehicle',
             'vehicle_id',
             'booking_date',
@@ -183,8 +190,15 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def validate_vehicle(self, vehicle):
         request = self.context['request']
-        if vehicle.customer.user != request.user:
-            raise serializers.ValidationError("You do not own this vehicle.")
+        # If admin, check if vehicle belongs to the provided customer
+        # Otherwise, check if vehicle belongs to the current user's customer
+        if request.user.role == 'ADMIN':
+            customer_id = self.initial_data.get('customer_id')
+            if customer_id and vehicle.customer_id != int(customer_id):
+                raise serializers.ValidationError("Vehicle does not belong to the selected customer.")
+        else:
+            if vehicle.customer.user != request.user:
+                raise serializers.ValidationError("You do not own this vehicle.")
         return vehicle
 
     def validate(self, attrs):
@@ -217,7 +231,12 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context['request']
-        validated_data['customer'] = Customer.objects.get(user=request.user)
+        if request.user.role == 'ADMIN':
+            # Customer should be provided in validated_data if admin is creating
+            if 'customer' not in validated_data:
+                raise serializers.ValidationError({"customer_id": "Customer is required for admin bookings."})
+        else:
+            validated_data['customer'] = Customer.objects.get(user=request.user)
         return super().create(validated_data)
 
 # -------------------
@@ -305,17 +324,18 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email")
 
     class Meta:
-        model = Customer
         fields = [
             "username", 
             "password", 
             "first_name", 
             "last_name", 
-            "email"
-            ]
+            "email",
+            "phone"
+        ]
 
     def create(self, validated_data):
         user_data = validated_data.pop("user")
+        phone = validated_data.pop("phone", "")
         user = User.objects.create_user(
             username=user_data["username"],
             password=user_data["password"],
@@ -324,5 +344,5 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
             email=user_data.get("email", ""),
             role="CUSTOMER",
         )
-        customer = Customer.objects.create(user=user, **validated_data)
+        customer = Customer.objects.create(user=user, phone=phone, **validated_data)
         return customer
