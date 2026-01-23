@@ -10,7 +10,8 @@ const InvoiceCard = ({ invoice }) => {
 
     const servicePrice = invoice.booking?.service?.price ? parseFloat(invoice.booking.service.price) : 0;
     const totalAmount = invoice.total_amount ? parseFloat(invoice.total_amount) : 0;
-    const additionalCharges = (totalAmount - servicePrice).toFixed(2);
+    const additionalCharges = invoice.additional_charges ? parseFloat(invoice.additional_charges) : 0;
+    const additionalChargesDesc = invoice.additional_charges_description || '';
 
     return (
         <div className={styles.invoiceCard}>
@@ -63,10 +64,17 @@ const InvoiceCard = ({ invoice }) => {
                         <td>Charge for the Service</td>
                         <td align="right">{servicePrice.toFixed(2)}</td>
                     </tr>
-                    <tr>
-                        <td>Additional Charges</td>
-                        <td align="right">{additionalCharges}</td>
-                    </tr>
+                    {additionalCharges > 0 && (
+                        <tr>
+                            <td>
+                                Additional Charges
+                                {additionalChargesDesc && (
+                                    <div className={styles.muted}>{additionalChargesDesc}</div>
+                                )}
+                            </td>
+                            <td align="right">{additionalCharges.toFixed(2)}</td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
 
