@@ -20,6 +20,10 @@ const Bookings = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [scheduledDate, setScheduledDate] = useState("");
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [invoiceBookingId, setInvoiceBookingId] = useState(null);
+  const [additionalCharge, setAdditionalCharge] = useState(0);
+  const [additionalChargeDescription, setAdditionalChargeDescription] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,23 +82,31 @@ const Bookings = () => {
     }
   };
 
-  const handleGenerateInvoice = async (bookingId) => {
+  const handleGenerateInvoiceClick = (bookingId) => {
     const booking = bookings.find((b) => b.id === bookingId);
     if (booking.invoice) {
       toast.error("Invoice already exists for this booking!");
-      navigate("../invoices"); // Redirect to invoices page
+      navigate("../invoices");
       return;
     }
 
-    if (window.confirm("Generate invoice for this booking?")) {
-      try {
-        await createInvoice(bookingId);
-        toast.success("Invoice generated successfully!");
-        navigate("../invoices"); // Redirect after successful generation
-      } catch (error) {
-        navigate("../invoices");
-        toast.error(error.response?.data?.error || "Failed to generate invoice");
-      }
+    setInvoiceBookingId(bookingId);
+    setAdditionalCharge(0);
+    setAdditionalChargeDescription('');
+    setIsInvoiceModalOpen(true);
+  };
+
+  const handleConfirmGenerateInvoice = async (e) => {
+    e.preventDefault();
+    try {
+      await createInvoice(invoiceBookingId, additionalCharge, additionalChargeDescription);
+      setIsInvoiceModalOpen(false);
+      toast.success("Invoice generated successfully!");
+      navigate("../invoices");
+    } catch (error) {
+      setIsInvoiceModalOpen(false);
+      navigate("../invoices");
+      toast.error(error.response?.data?.error || "Failed to generate invoice");
     }
   };
 
@@ -166,7 +178,7 @@ const Bookings = () => {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => handleGenerateInvoice(booking.id)}
+                    onClick={() => handleGenerateInvoiceClick(booking.id)}
                   >
                     Generate Invoice
                   </Button>
@@ -192,6 +204,41 @@ const Bookings = () => {
           />
           <div className="flex justify-end mt-4">
             <Button type="submit">Confirm Approval</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={isInvoiceModalOpen}
+        onClose={() => setIsInvoiceModalOpen(false)}
+        title="Generate Invoice"
+      >
+        <form onSubmit={handleConfirmGenerateInvoice}>
+          <Input
+            label="Additional Charges (Rs.)"
+            type="number"
+            step="0.01"
+            min="0"
+            value={additionalCharge}
+            onChange={(e) => setAdditionalCharge(parseFloat(e.target.value) || 0)}
+            placeholder="0.00"
+          />
+          <Input
+            label="Additional Charges Description"
+            type="text"
+            value={additionalChargeDescription}
+            onChange={(e) => setAdditionalChargeDescription(e.target.value)}
+            placeholder="e.g., Extra parts, labor, etc."
+          />
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsInvoiceModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Generate Invoice</Button>
           </div>
         </form>
       </Modal>
