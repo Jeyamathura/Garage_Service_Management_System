@@ -324,6 +324,7 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email")
 
     class Meta:
+        model = Customer
         fields = [
             "username", 
             "password", 
