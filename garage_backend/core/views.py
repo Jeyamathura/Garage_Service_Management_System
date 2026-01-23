@@ -43,7 +43,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_serializer_class(self):
-        if self.action == 'create' and self.request.user.role == 'ADMIN':
+        if self.action == 'create' and self.request.user and self.request.user.is_authenticated and self.request.user.role == 'ADMIN':
             return CustomerRegistrationSerializer
         return CustomerSerializer
 
