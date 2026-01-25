@@ -2,8 +2,8 @@ import api from "./axios";
 
 export const getCustomers = async () => {
   const response = await api.get("/customers/");
-  return response.data.filter((customer) => 
-    customer != null && 
+  return response.data.filter((customer) =>
+    customer != null &&
     customer.user != null &&
     customer.user.username != null
   );
@@ -23,5 +23,10 @@ export const getCustomerById = async (id) => {
 
 export const updateCustomerProfile = async (id, data) => {
   const response = await api.patch(`/customers/${id}/`, data);
+  return response.data;
+};
+
+export const registerCustomer = async (data) => {
+  const response = await api.post("/customers/", data);
   return response.data;
 };
