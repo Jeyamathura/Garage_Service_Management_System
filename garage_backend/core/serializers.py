@@ -172,6 +172,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = [
             'id',
+            'service',
             'service_id',
             'customer',
             'customer_id',
@@ -181,14 +182,17 @@ class BookingSerializer(serializers.ModelSerializer):
             'preferred_date',
             'scheduled_date',
             'status',
+            'invoice',
         ]
         read_only_fields = [
             'id',
+            'service',
             'customer',
             'booking_date',
             'status',
             'created_at',
             'updated_at',
+            'invoice',
         ]
 
     def validate_vehicle(self, vehicle):
