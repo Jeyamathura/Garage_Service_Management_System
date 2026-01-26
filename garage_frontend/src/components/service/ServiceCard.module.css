@@ -8,87 +8,88 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
     position: relative;
     overflow: hidden;
 }
 
 .card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(13, 148, 136, 0.1), 0 10px 10px -5px rgba(13, 148, 136, 0.04);
-    border-color: var(--teal-300);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(to right, var(--teal-400), var(--teal-600));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.iconHeader {
+    margin-bottom: 1.5rem;
 }
 
-.card:hover::before {
-    opacity: 1;
-}
-
-.iconWrapper {
-    width: 50px;
-    height: 50px;
-    background: var(--teal-50);
-    border-radius: 1rem;
+.iconBox {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: var(--bg-main);
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
-    color: var(--teal-600);
+    color: var(--primary);
+    transition: var(--transition);
 }
 
-.title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--teal-900);
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
+.card:hover .iconBox {
+    background: var(--primary);
+    color: white;
 }
 
-.description {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 2rem;
+.content {
     flex: 1;
 }
 
-.footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--teal-50);
+.title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.5rem 0;
 }
 
-.price {
+.description {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.priceSection {
     display: flex;
     flex-direction: column;
+    margin-bottom: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
 }
 
 .priceLabel {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
-    font-weight: 700;
-    color: var(--teal-600);
+    color: var(--text-muted);
     letter-spacing: 0.05em;
 }
 
 .priceValue {
     font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--teal-900);
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--primary);
 }
+
+.footer {
+    margin-top: auto;
+}
+
 
 .bookBtn {
     background: linear-gradient(to right, #0d9488, #10b981);
