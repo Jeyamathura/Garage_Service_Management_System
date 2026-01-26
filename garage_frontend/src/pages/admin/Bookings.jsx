@@ -7,22 +7,43 @@ import {
   rejectBooking,
   startBooking,
   completeBooking,
-  updateBooking,
+  deleteBooking,
 } from "../../api/booking.api";
 import { createInvoice } from "../../api/invoice.api";
-import Table from "../../components/ui/Table";
+import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
-import StatusBadge from "../../components/ui/StatusBadge";
+import Badge from "../../components/ui/Badge";
 import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
 import AddBookingModal from "./AddBookingModal";
 import BookingDetails from "../../components/booking/BookingDetails";
+import {
+  Plus,
+  Search,
+  Filter,
+  Check,
+  X,
+  Play,
+  CheckCircle,
+  FileText,
+  User,
+  Car,
+  Settings,
+  Calendar,
+  AlertCircle,
+  Pencil
+} from "lucide-react";
+
+import styles from "./Bookings.module.css";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedViewBooking, setSelectedViewBooking] = useState(null);
   const [scheduledDate, setScheduledDate] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isAddBookingModalOpen, setIsAddBookingModalOpen] = useState(false);
@@ -38,20 +59,35 @@ const Bookings = () => {
 
   const fetchBookings = async () => {
     try {
+      setLoading(true);
       const data = await getBookings();
       const validBookings = Array.isArray(data) ? data.filter(Boolean) : [];
       setBookings(validBookings);
 
-      // Update selectedViewBooking if the modal is open to reflect changes
       if (selectedViewBooking) {
         const updated = validBookings.find(b => b.id === selectedViewBooking.id);
         if (updated) setSelectedViewBooking(updated);
       }
     } catch (error) {
-      console.error("Failed to fetch bookings", error);
       toast.error("Failed to load bookings");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const filteredBookings = bookings.filter(booking => {
+    const searchLower = searchQuery.toLowerCase();
+    const customerName = `${booking.customer?.user?.first_name} ${booking.customer?.user?.last_name}`.toLowerCase();
+    const vehicleNumber = booking.vehicle?.vehicle_number?.toLowerCase() || "";
+    const bookingId = `BOOK-${booking.id.toString().padStart(4, '0')}`.toLowerCase();
+    const statusMatch = statusFilter === "ALL" || booking.status === statusFilter;
+
+    return statusMatch && (
+      customerName.includes(searchLower) ||
+      vehicleNumber.includes(searchLower) ||
+      bookingId.includes(searchLower)
+    );
+  });
 
   const handleApproveClick = (booking) => {
     setSelectedBooking(booking);
@@ -93,18 +129,21 @@ const Bookings = () => {
   };
 
   const handleComplete = async (id) => {
-    if (window.confirm("Mark service as completed?")) {
+    try {
       await completeBooking(id);
       fetchBookings();
-      toast.success("Booking completed");
+      toast.success("Service cycle completed");
+    } catch (error) {
+      toast.error("Failed to complete service");
     }
   };
+
+
 
   const handleGenerateInvoiceClick = (bookingId) => {
     const booking = bookings.find((b) => b.id === bookingId);
     if (booking.invoice) {
-      toast.error("Invoice already exists for this booking!");
-      navigate("../invoices");
+      navigate("../invoices", { state: { invoiceId: booking.invoice.id } });
       return;
     }
 
@@ -117,151 +156,137 @@ const Bookings = () => {
   const handleConfirmGenerateInvoice = async (e) => {
     e.preventDefault();
     try {
-      await createInvoice(
+      const newInvoice = await createInvoice(
         invoiceBookingId,
         additionalCharge,
         additionalChargeDescription
       );
       setIsInvoiceModalOpen(false);
-      toast.success("Invoice generated successfully!");
-      navigate("../invoices");
+      toast.success("Invoice generated!");
+      navigate("../invoices", { state: { invoiceId: newInvoice.id } });
     } catch (error) {
-      setIsInvoiceModalOpen(false);
-      navigate("../invoices");
       toast.error(error.response?.data?.error || "Failed to generate invoice");
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "Not set";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-teal-800">Booking Management</h1>
-        <Button
-          variant="primary"
-          onClick={() => setIsAddBookingModalOpen(true)}
-          className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 border-none shadow-md hover:shadow-lg transition-all"
-        >
-          Add New Booking
-        </Button>
-      </div>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Service Pipeline</h1>
+          <p className={styles.subtitle}>Manage customer requests and workshop workflow.</p>
+        </div>
+        <Button onClick={() => setIsAddBookingModalOpen(true)} icon={Plus}>Add New Booking</Button>
+      </header>
 
-      <Table
-        headers={[
-          "ID",
-          "Customer",
-          "Vehicle",
-          "Service",
-          "Preferred",
-          "Scheduled",
-          "Status",
-          "Actions",
-        ]}
-      >
-        {bookings.map((booking) => (
-          <tr
-            key={booking.id}
-            className="hover:bg-teal-50/50 transition-colors cursor-pointer"
-            onClick={() => handleRowClick(booking)}
-          >
-            <td className="font-semibold text-teal-700">#{booking.id}</td>
-            <td>
-              <div className="font-medium text-gray-900">
-                {booking.customer?.user?.first_name} {booking.customer?.user?.last_name}
-              </div>
-              <div className="text-[10px] text-gray-400 font-normal">
-                @{booking.customer?.user?.username || 'N/A'}
-              </div>
-            </td>
-            <td>
-              <div className="font-medium">{booking.vehicle?.vehicle_number}</div>
-              <div className="text-xs text-gray-500">{booking.vehicle?.vehicle_type}</div>
-            </td>
-            <td>
-              <div className="font-medium text-gray-900">{booking.service?.service_name}</div>
-              <div className="text-[10px] text-gray-400 font-medium">
-                Rs. {booking.service?.price ? parseFloat(booking.service.price).toFixed(2) : "0.00"}
-              </div>
-            </td>
-            <td>
-              <div className="text-sm font-medium text-gray-700">
-                {booking.preferred_date || "N/A"}
-              </div>
-            </td>
-            <td>
-              <div className="text-sm font-semibold text-emerald-700">
-                {formatDate(booking.scheduled_date)}
-              </div>
-            </td>
-            <td>
-              <StatusBadge status={booking.status} />
-            </td>
-            <td>
-              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                {booking.status === "PENDING" && (
-                  <>
-                    <Button
-                      variant="success"
-                      size="sm"
-                      onClick={() => handleApproveClick(booking)}
-                      className="rounded-lg px-3 py-1 text-xs"
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleReject(booking.id)}
-                      className="rounded-lg px-3 py-1 text-xs"
-                    >
-                      Reject
-                    </Button>
-                  </>
-                )}
-                {booking.status === "APPROVED" && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleStart(booking.id)}
-                    className="rounded-lg px-3 py-1 text-xs bg-indigo-600 border-none hover:bg-indigo-700"
-                  >
-                    Start Work
-                  </Button>
-                )}
-                {booking.status === "IN_PROGRESS" && (
-                  <Button
-                    variant="success"
-                    size="sm"
-                    onClick={() => handleComplete(booking.id)}
-                    className="rounded-lg px-3 py-1 text-xs bg-emerald-600 border-none hover:bg-emerald-700"
-                  >
-                    Complete
-                  </Button>
-                )}
-                {booking.status === "COMPLETED" && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleGenerateInvoiceClick(booking.id)}
-                    className="rounded-lg px-3 py-1 text-xs border-teal-200 text-teal-700 hover:bg-teal-50"
-                  >
-                    Generate Invoice
-                  </Button>
-                )}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </Table>
+      <Card className={styles.tableCard} noPadding>
+        <div className={styles.tableActions}>
+          <div className={styles.searchWrapper}>
+            <Search size={18} className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search by ID, Customer or Vehicle..."
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className={styles.filterWrapper}>
+            <Filter size={18} className={styles.filterIcon} />
+            <select
+              className={styles.statusFilter}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Vehicle & Service</th>
+                <th>Preferred</th>
+                <th>Scheduled</th>
+                <th>Status</th>
+                <th>Management</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array(5).fill(0).map((_, i) => (
+                  <tr key={i}><td colSpan="7"><div className={styles.skeletonLine}></div></td></tr>
+                ))
+              ) : filteredBookings.length > 0 ? filteredBookings.map((booking) => (
+                <tr key={booking.id} onClick={() => handleRowClick(booking)} className={styles.clickableRow}>
+                  <td>
+                    <div className={styles.bookingId}>BOOK-{booking.id.toString().padStart(4, '0')}</div>
+                  </td>
+                  <td>
+                    <div className={styles.customerName}>
+                      <User size={12} />
+                      {booking.customer?.user?.first_name} {booking.customer?.user?.last_name}
+                    </div>
+                  </td>
+                  <td>
+                    <div className={styles.vehicleInfo}>
+                      <Car size={12} />
+                      {booking.vehicle?.vehicle_number}
+                    </div>
+                    <div className={styles.serviceInfo}>
+                      <Settings size={12} />
+                      {booking.service?.service_name}
+                    </div>
+                  </td>
+                  <td>
+                    <div className={styles.dateInfo}>{booking.preferred_date || "N/A"}</div>
+                  </td>
+                  <td>
+                    <div className={`${styles.dateInfo} ${booking.scheduled_date ? styles.scheduled : ''}`}>
+                      {booking.scheduled_date || "Not set"}
+                    </div>
+                  </td>
+                  <td>
+                    <Badge status={booking.status}>{booking.status}</Badge>
+                  </td>
+                  <td>
+                    <div className={styles.actions} onClick={e => e.stopPropagation()}>
+                      {booking.status === "PENDING" && (
+                        <>
+                          <Button variant="ghost" size="sm" onClick={() => handleApproveClick(booking)} className={styles.approveBtn}><Check size={16} /></Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleReject(booking.id)} className={styles.rejectBtn}><X size={16} /></Button>
+                        </>
+                      )}
+                      {booking.status === "APPROVED" && (
+                        <Button variant="secondary" size="sm" onClick={() => handleStart(booking.id)} icon={Play}>Start</Button>
+                      )}
+                      {booking.status === "IN_PROGRESS" && (
+                        <Button variant="primary" size="sm" onClick={() => handleComplete(booking.id)} icon={CheckCircle}>Complete</Button>
+                      )}
+                      {booking.status === "COMPLETED" && (
+                        <Button variant="ghost" size="sm" onClick={() => handleGenerateInvoiceClick(booking.id)} icon={FileText}>Invoice</Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="7" className={styles.emptyState}>No bookings found match your criteria.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       <AddBookingModal
         isOpen={isAddBookingModalOpen}
@@ -272,41 +297,39 @@ const Bookings = () => {
       <Modal
         isOpen={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
-        title="Approve Booking"
+        title="Approve & Schedule"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setIsApproveModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmApprove}>Confirm Approval</Button>
+          </>
+        }
       >
-        <form onSubmit={handleConfirmApprove} className="space-y-4">
+        <div className={styles.approveForm}>
+          <p className={styles.formHint}>Confirm the service date for <strong>{selectedBooking?.customer?.user?.username}'s</strong> vehicle.</p>
           <Input
-            label="Scheduled Date"
+            label="Workshop Scheduled Date"
             type="date"
+            icon={Calendar}
             value={scheduledDate}
             onChange={(e) => setScheduledDate(e.target.value)}
             required
-            className="rounded-xl h-11"
           />
-          <div className="flex justify-end gap-3 mt-6">
-            <Button
-              variant="secondary"
-              onClick={() => setIsApproveModalOpen(false)}
-              className="rounded-xl"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="rounded-xl bg-teal-600 border-none px-6"
-            >
-              Confirm Approval
-            </Button>
-          </div>
-        </form>
+        </div>
       </Modal>
 
       <Modal
         isOpen={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
-        title="Generate Invoice"
+        title="Generate Official Invoice"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setIsInvoiceModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmGenerateInvoice}>Generate & View</Button>
+          </>
+        }
       >
-        <form onSubmit={handleConfirmGenerateInvoice} className="space-y-4">
+        <div className={styles.invoiceForm}>
           <Input
             label="Additional Charges (Rs.)"
             type="number"
@@ -315,55 +338,33 @@ const Bookings = () => {
             value={additionalCharge}
             onChange={(e) => setAdditionalCharge(parseFloat(e.target.value) || 0)}
             placeholder="0.00"
-            className="rounded-xl h-11"
           />
           <Input
-            label="Additional Charges Description"
+            label="Description of Additional Work"
             type="text"
             value={additionalChargeDescription}
             onChange={(e) => setAdditionalChargeDescription(e.target.value)}
-            placeholder="e.g., Extra parts, labor, etc."
-            className="rounded-xl h-11"
+            placeholder="e.g., Replacement parts, specialized labor"
           />
-          <div className="flex justify-end gap-3 mt-8">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsInvoiceModalOpen(false)}
-              className="rounded-xl px-6"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="rounded-xl bg-teal-600 border-none px-6"
-            >
-              Generate Invoice
-            </Button>
-          </div>
-        </form>
+        </div>
       </Modal>
 
-      {/* Booking View Modal */}
       <Modal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
-        title="Booking Details"
+        title="Booking Overview"
+        size="lg"
       >
-        <div className="bg-white">
+        {selectedViewBooking && (
           <BookingDetails
             booking={selectedViewBooking}
             onUpdate={fetchBookings}
           />
-          <div className="flex justify-end p-6 border-t border-teal-50">
-            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)} className="rounded-xl">
-              Close
-            </Button>
-          </div>
-        </div>
+        )}
       </Modal>
     </div>
   );
 };
 
 export default Bookings;
+
