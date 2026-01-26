@@ -1,6 +1,6 @@
----
-
 # Garage Backend – Django Setup
+
+---
 
 This repository contains the backend setup for a Django-based project using:
 
@@ -123,15 +123,17 @@ pip install django-cors-headers
 
 ## Create Database in MySQL
 
-```
+```sql
 CREATE DATABASE garage_service_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
 
-* Configure database settings in `settings.py`
--	Edit this if there're any changes
-```
+### Configure Database Settings
+
+Edit `settings.py` if there are any changes:
+
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -146,30 +148,61 @@ DATABASES = {
         },
     }
 }
-
 ```
-* Verify Connection
 
-```
+### Verify Database Connection
+
+```bash
 python manage.py check
 ```
+
 ---
 
 ## Migrations
 
-* Create migrations from your models:
+Create migrations from your models:
 
-```
+```bash
 python manage.py makemigrations
 ```
 
-* Apply migrations to the database:
+Apply migrations to the database:
 
-```
+```bash
 python manage.py migrate
 ```
 
 ---
+
+## Create Superuser (Admin Setup)
+
+Create an admin (superuser) account to manage the application via the Django Admin panel.
+
+```bash
+python manage.py createsuperuser
+```
+
+Follow the terminal prompts.
+
+### Example Credentials (Development Only)
+
+```
+Username: admin
+Email: kindloop.org@gmail.com
+Password: admin123
+```
+
+> **Warning:**
+> These credentials are intended for **local development only**.
+
+---
+
+## xhtml to pdf
+
+```bash
+pip install xhtml2pdf
+
+```
 
 ## Run Development Server
 
@@ -185,14 +218,15 @@ http://127.0.0.1:8000/
 
 ---
 
+
 ## Notes
 
 * Always activate the virtual environment before running Django commands.
+* Create a superuser to manage models and users through the Django Admin interface.
 
 ---
 
 ## Troubleshooting
 
 * If `where python` does not point to `venv`, re-activate the virtual environment.
-
----
+* If MySQL connection fails, verify credentials and that the MySQL service is running.
