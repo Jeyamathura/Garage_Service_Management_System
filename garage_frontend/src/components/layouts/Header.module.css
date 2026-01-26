@@ -1,17 +1,21 @@
 .header {
-  background: linear-gradient(180deg, #0f172a 0%, #115e59 100%);
-  color: white;
-  padding: 1rem 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-surface);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999 !important;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Very subtle shadow instead of border */
+  color: var(--text-main);
 }
 
 .container {
-  width: 95%;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,68 +23,185 @@
 
 .brand {
   display: flex;
-  flex-direction: column;
+  align-items: center;
 }
 
-.title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: white;
+.logoLink {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.subtitle {
-  margin: 0;
-  font-size: 1rem;
-  opacity: 0.9;
-  font-weight: 300;
+.logoIcon {
+  width: 44px;
+  height: 44px;
+  background: white;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.accentText {
+  color: var(--primary-light);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+}
+
+.linksGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .navLink {
-  color: #ccfbf1;
-  /* Teal 100 */
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: var(--transition);
+}
+
+.navLink svg {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 .navLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: var(--primary);
+  background: var(--teal-50);
+}
+
+.navLink:hover svg {
+  color: var(--primary);
 }
 
 .navLinkActive {
-  background-color: white;
-  color: #0d9488;
-  /* Teal 600 */
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: var(--primary) !important;
+  background: var(--teal-50);
+  box-shadow: none;
+}
+
+.navLinkActive svg {
+  color: var(--primary) !important;
+}
+
+.authGroup {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--border);
+  height: 24px;
+  display: flex;
+  align-items: center;
 }
 
 .logoutBtn {
-  margin-left: 1rem;
-  padding: 0.5rem 1.25rem;
-  background-color: #0f172a;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
+  background: none;
+  border: none;
+  color: #fda4af;
   font-weight: 600;
-  transition: all 0.2s;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: var(--transition);
 }
 
 .logoutBtn:hover {
-  background-color: #1e293b;
-  transform: translateY(-1px);
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.mobileToggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .mobileToggle {
+    display: block;
+  }
+
+  .nav {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: var(--primary);
+    padding: 2rem;
+    flex-direction: column;
+    align-items: stretch;
+    border-bottom: 4px solid var(--primary-light);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: auto;
+    gap: 1rem;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .navOpen {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .linksGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .authGroup {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-left: 0;
+    padding-top: 1.5rem;
+    margin-top: 0.5rem;
+    height: auto;
+    display: block;
+  }
+
+  .navLink,
+  .logoutBtn {
+    padding: 0.875rem 1rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+  }
 }
