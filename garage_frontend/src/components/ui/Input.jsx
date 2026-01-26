@@ -1,20 +1,18 @@
 import React from 'react';
+import './Input.css';
 
-const Input = ({ label, type = 'text', name, value, onChange, placeholder, required = false, disabled = false }) => {
+const Input = ({ label, icon: Icon, error, ...props }) => {
     return (
-        <div className="input-group">
+        <div className={`input-group ${error ? 'has-error' : ''}`}>
             {label && <label className="input-label">{label}</label>}
-            <input
-                className="form-input"
-                type={type}
-                name={name}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                required={required}
-                disabled={disabled}
-                readOnly={disabled}
-            />
+            <div className="input-wrapper">
+                {Icon && <Icon className="input-icon" size={18} />}
+                <input
+                    className={`form-input ${Icon ? 'with-icon' : ''}`}
+                    {...props}
+                />
+            </div>
+            {error && <span className="input-error-message">{error}</span>}
         </div>
     );
 };
