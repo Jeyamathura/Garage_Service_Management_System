@@ -16,19 +16,20 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
 import AddBookingModal from "./AddBookingModal";
+import BookingDetails from "../../components/booking/BookingDetails";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedViewBooking, setSelectedViewBooking] = useState(null);
   const [scheduledDate, setScheduledDate] = useState("");
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isAddBookingModalOpen, setIsAddBookingModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [invoiceBookingId, setInvoiceBookingId] = useState(null);
   const [additionalCharge, setAdditionalCharge] = useState(0);
   const [additionalChargeDescription, setAdditionalChargeDescription] = useState("");
-  const [newScheduledDate, setNewScheduledDate] = useState("");
-  const [editingBookingId, setEditingBookingId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +41,12 @@ const Bookings = () => {
       const data = await getBookings();
       const validBookings = Array.isArray(data) ? data.filter(Boolean) : [];
       setBookings(validBookings);
+
+      // Update selectedViewBooking if the modal is open to reflect changes
+      if (selectedViewBooking) {
+        const updated = validBookings.find(b => b.id === selectedViewBooking.id);
+        if (updated) setSelectedViewBooking(updated);
+      }
     } catch (error) {
       console.error("Failed to fetch bookings", error);
       toast.error("Failed to load bookings");
@@ -50,6 +57,11 @@ const Bookings = () => {
     setSelectedBooking(booking);
     setScheduledDate(booking.preferred_date || "");
     setIsApproveModalOpen(true);
+  };
+
+  const handleRowClick = (booking) => {
+    setSelectedViewBooking(booking);
+    setIsViewModalOpen(true);
   };
 
   const handleConfirmApprove = async (e) => {
@@ -120,18 +132,6 @@ const Bookings = () => {
     }
   };
 
-  const handleConfirmUpdateSchedule = async (e) => {
-    if (e) e.preventDefault();
-    try {
-      await updateBooking(editingBookingId, { scheduled_date: newScheduledDate });
-      setEditingBookingId(null);
-      toast.success("Schedule updated");
-      fetchBookings();
-    } catch (error) {
-      toast.error("Failed to update schedule");
-    }
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "Not set";
     const date = new Date(dateString);
@@ -168,7 +168,11 @@ const Bookings = () => {
         ]}
       >
         {bookings.map((booking) => (
-          <tr key={booking.id} className="hover:bg-teal-50/50 transition-colors">
+          <tr
+            key={booking.id}
+            className="hover:bg-teal-50/50 transition-colors cursor-pointer"
+            onClick={() => handleRowClick(booking)}
+          >
             <td className="font-semibold text-teal-700">#{booking.id}</td>
             <td>
               <div className="font-medium text-gray-900">
@@ -194,72 +198,15 @@ const Bookings = () => {
               </div>
             </td>
             <td>
-              <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                {editingBookingId === booking.id ? (
-                  <div className="flex items-center gap-1 p-0.5 bg-white rounded-md border border-teal-400 shadow-md animate-in fade-in zoom-in duration-200">
-                    <input
-                      type="date"
-                      value={newScheduledDate}
-                      onChange={(e) => setNewScheduledDate(e.target.value)}
-                      className="text-[11px] p-1 border-none focus:outline-none bg-transparent font-medium text-teal-800 w-28"
-                      autoFocus
-                    />
-                    <div className="flex items-center border-l border-teal-100 pl-1">
-                      <button
-                        onClick={handleConfirmUpdateSchedule}
-                        className="p-1 text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
-                        title="Save"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setEditingBookingId(null)}
-                        className="p-1 text-red-400 hover:bg-red-50 rounded transition-colors"
-                        title="Cancel"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => {
-                      const editableStatuses = ["PENDING", "APPROVED", "IN_PROGRESS"];
-                      if (editableStatuses.includes(booking.status)) {
-                        setEditingBookingId(booking.id);
-                        setNewScheduledDate(booking.scheduled_date || "");
-                      }
-                    }}
-                    className={`
-                      group flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer
-                      ${booking.scheduled_date
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100"
-                        : "bg-gray-50 text-gray-500 border border-gray-100 hover:bg-gray-100"}
-                      ${!["PENDING", "APPROVED", "IN_PROGRESS"].includes(booking.status)
-                        ? "cursor-default opacity-80"
-                        : "hover:bg-teal-50 hover:border-teal-200 active:scale-95"}
-                    `}
-                    title={["PENDING", "APPROVED", "IN_PROGRESS"].includes(booking.status) ? "Click to set schedule" : ""}
-                  >
-                    <span>{formatDate(booking.scheduled_date)}</span>
-                    {["PENDING", "APPROVED", "IN_PROGRESS"].includes(booking.status) && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    )}
-                  </div>
-                )}
+              <div className="text-sm font-semibold text-emerald-700">
+                {formatDate(booking.scheduled_date)}
               </div>
             </td>
             <td>
               <StatusBadge status={booking.status} />
             </td>
             <td>
-              <div className="flex gap-2">
+              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                 {booking.status === "PENDING" && (
                   <>
                     <Button
@@ -395,6 +342,25 @@ const Bookings = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Booking View Modal */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title="Booking Details"
+      >
+        <div className="bg-white">
+          <BookingDetails
+            booking={selectedViewBooking}
+            onUpdate={fetchBookings}
+          />
+          <div className="flex justify-end p-6 border-t border-teal-50">
+            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)} className="rounded-xl">
+              Close
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
