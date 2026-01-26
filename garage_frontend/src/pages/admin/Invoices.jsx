@@ -1,29 +1,73 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getInvoices, updateInvoiceStatus, updateInvoiceCharges, downloadInvoicePDF } from '../../api/invoice.api';
-import Table from '../../components/ui/Table';
+import Card from '../../components/ui/Card';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
+import Badge from '../../components/ui/Badge';
 import InvoiceCard from '../../components/invoice/InvoiceCard';
+import {
+    FileText,
+    Download,
+    Pencil,
+    Check,
+    X,
+    Search,
+    Filter,
+    User,
+    Calendar
+} from 'lucide-react';
+
+import styles from './Invoices.module.css';
 
 const Invoices = () => {
+    const location = useLocation();
     const [invoices, setInvoices] = useState([]);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [highlightedId, setHighlightedId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
     const [editValues, setEditValues] = useState({});
 
     useEffect(() => {
         fetchInvoices();
     }, []);
 
+    useEffect(() => {
+        if (location.state?.invoiceId && invoices.length > 0) {
+            const targetId = location.state.invoiceId;
+            const targetInvoice = invoices.find(inv => inv.id === targetId);
+
+            if (targetInvoice) {
+                setSearchQuery(`INV-${targetId.toString().padStart(4, '0')}`);
+                setHighlightedId(targetId);
+                setSelectedInvoice(targetInvoice);
+
+                // Delay modal slightly so user sees the "blink" in the list first
+                setTimeout(() => setShowModal(true), 500);
+
+                // Clear state to prevent reopening if we needed to, but for now this is fine
+                window.history.replaceState({}, document.title);
+
+                // Clear highlight after animation ends (matches CSS duration)
+                setTimeout(() => setHighlightedId(null), 2500);
+            }
+        }
+    }, [invoices, location.state]);
+
     const fetchInvoices = async () => {
         try {
+            setLoading(true);
             const data = await getInvoices();
             setInvoices(data);
         } catch (error) {
-            console.error("Failed to fetch invoices", error);
             toast.error("Failed to load invoices");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -33,7 +77,6 @@ const Invoices = () => {
             fetchInvoices();
             toast.success("Invoice status updated");
         } catch (error) {
-            console.error("Failed to update invoice status", error);
             toast.error("Failed to update status");
         }
     };
@@ -49,7 +92,6 @@ const Invoices = () => {
                 await downloadInvoicePDF(selectedInvoice.id);
                 toast.success("Download started");
             } catch (error) {
-                console.error("Failed to download PDF", error);
                 toast.error("Failed to download PDF");
             }
         }
@@ -75,9 +117,8 @@ const Invoices = () => {
             setEditingId(null);
             setEditValues({});
             fetchInvoices();
-            toast.success("Additional charges updated successfully");
+            toast.success("Charges updated successfully");
         } catch (error) {
-            console.error("Failed to update charges", error);
             toast.error("Failed to update charges");
         }
     };
@@ -88,143 +129,193 @@ const Invoices = () => {
         setEditValues({});
     };
 
-    return (
-        <div className="p-4">
-            <h1 className="mb-4">Manage Invoices</h1>
-            <Table headers={['Invoice ID', 'Booking ID', 'Customer', 'Service Price', 'Additional Charges', 'Total Amount', 'Date', 'Status']}>
-                {invoices.map((invoice) => (
-                    <tr
-                        key={invoice.id}
-                        onClick={() => handleRowClick(invoice)}
-                        style={{ cursor: 'pointer' }}
-                        className="hover:bg-gray-100"
-                    >
-                        <td>{invoice.id}</td>
-                        <td>{invoice.booking?.id || 'N/A'}</td>
-                        <td>{invoice.booking?.customer?.user?.username || 'N/A'}</td>
-                        <td>
-                            <div>
-                                Rs. {parseFloat(invoice.booking?.service?.price || 0).toFixed(2)}
-                                {invoice.booking?.service?.service_name && (
-                                    <div style={{ fontSize: '0.85em', color: '#666' }}>
-                                        {invoice.booking.service.service_name}
-                                    </div>
-                                )}
-                            </div>
-                        </td>
+    const filteredInvoices = invoices.filter(invoice => {
+        const searchLower = searchQuery.toLowerCase();
+        const customerUsername = invoice.booking?.customer?.user?.username?.toLowerCase() || "";
+        const invoiceId = `INV-${invoice.id.toString().padStart(4, '0')}`.toLowerCase();
+        const statusMatch = statusFilter === "ALL" || invoice.payment_status === statusFilter;
 
-                        {/* Additional Charges Column with Inline Edit */}
-                        <td onClick={(e) => e.stopPropagation()}>
-                            {editingId === invoice.id ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={editValues.charges}
-                                            onChange={(e) => setEditValues({
-                                                ...editValues,
-                                                charges: parseFloat(e.target.value) || 0
-                                            })}
-                                            className="border rounded px-2 py-1"
-                                            style={{ width: '100px' }}
-                                            placeholder="0.00"
-                                        />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={editValues.description}
-                                        onChange={(e) => setEditValues({
-                                            ...editValues,
-                                            description: e.target.value
-                                        })}
-                                        className="border rounded px-2 py-1"
-                                        placeholder="Description"
-                                        style={{ fontSize: '0.85em' }}
-                                    />
-                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                                        <button
-                                            onClick={(e) => handleSaveCharges(invoice.id, e)}
-                                            className="border rounded px-2 py-1 bg-green-500 text-white"
-                                            style={{ fontSize: '0.8em' }}
-                                        >
-                                            Save
-                                        </button>
-                                        <button
-                                            onClick={handleCancelEdit}
-                                            className="border rounded px-2 py-1 bg-gray-300"
-                                            style={{ fontSize: '0.8em' }}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <div>
-                                        {invoice.additional_charges > 0 ? (
+        return statusMatch && (customerUsername.includes(searchLower) || invoiceId.includes(searchLower));
+    });
+
+    return (
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <div>
+                    <h1 className={styles.title}>Financial Records</h1>
+                    <p className={styles.subtitle}>Manage customer billing and payment statuses.</p>
+                </div>
+                <div className={styles.stats}>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>Total Revenue</span>
+                        <span className={styles.statValue}>Rs. {invoices.reduce((acc, inv) => acc + parseFloat(inv.total_amount || 0), 0).toLocaleString()}</span>
+                    </div>
+                </div>
+            </header>
+
+            <Card className={styles.tableCard} noPadding>
+                <div className={styles.tableActions}>
+                    <div className={styles.searchWrapper}>
+                        <Search size={18} className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            placeholder="Search by Invoice ID or Customer..."
+                            className={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.filterWrapper}>
+                        <Filter size={18} className={styles.filterIcon} />
+                        <select
+                            className={styles.statusFilter}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="ALL">All Payments</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="PAID">Paid</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="data-table-container">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Billing Details</th>
+                                <th>Extra Charges</th>
+                                <th>Total Charges</th>
+                                <th>Date</th>
+                                <th>Payment Status</th>
+                                <th>Management</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                Array(5).fill(0).map((_, i) => (
+                                    <tr key={i}><td colSpan="8"><div className={styles.skeletonLine}></div></td></tr>
+                                ))
+                            ) : filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => (
+                                <tr
+                                    key={invoice.id}
+                                    onClick={() => handleRowClick(invoice)}
+                                    className={`${styles.clickableRow} ${highlightedId === invoice.id ? styles.highlightedRow : ''}`}
+                                >
+                                    <td>
+                                        <div className={styles.invoiceId}>INV-{invoice.id.toString().padStart(4, '0')}</div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.customerName}>
+                                            <User size={12} />
+                                            {invoice.booking?.customer?.user?.username || 'N/A'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.servicePrice}>
+                                            Rs. {parseFloat(invoice.booking?.service?.price || 0).toLocaleString()}
+                                        </div>
+                                        <div className={styles.serviceName}>
+                                            {invoice.booking?.service?.service_name || "Custom Service"}
+                                        </div>
+                                    </td>
+
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                        {editingId === invoice.id ? (
+                                            <div className={styles.editGrid}>
+                                                <input
+                                                    type="number"
+                                                    value={editValues.charges}
+                                                    onChange={(e) => setEditValues({
+                                                        ...editValues,
+                                                        charges: parseFloat(e.target.value) || 0
+                                                    })}
+                                                    className={styles.editInput}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={editValues.description}
+                                                    onChange={(e) => setEditValues({
+                                                        ...editValues,
+                                                        description: e.target.value
+                                                    })}
+                                                    className={styles.editInput}
+                                                    placeholder="Description"
+                                                />
+                                                <div className={styles.editActions}>
+                                                    <button onClick={(e) => handleSaveCharges(invoice.id, e)} className={styles.saveBtn}><Check size={14} color="green" /></button>
+                                                    <button onClick={handleCancelEdit} className={styles.cancelBtn}><X size={14} color="red" /></button>
+                                                </div>
+                                            </div>
+                                        ) : (
                                             <>
-                                                Rs. {parseFloat(invoice.additional_charges).toFixed(2)}
+                                                <div className={styles.chargeInfo}>
+                                                    <span className={invoice.additional_charges > 0 ? styles.positivePrice : styles.mutedText}>
+                                                        Rs. {parseFloat(invoice.additional_charges || 0).toLocaleString()}
+                                                    </span>
+                                                    <button
+                                                        onClick={(e) => handleEditClick(invoice, e)}
+                                                        className={styles.inlineEditBtn}
+                                                    >
+                                                        <Pencil size={14} />
+                                                    </button>
+                                                </div>
                                                 {invoice.additional_charges_description && (
-                                                    <div style={{ fontSize: '0.85em', color: '#666' }}>
+                                                    <div className={styles.chargeDescription}>
                                                         {invoice.additional_charges_description}
                                                     </div>
                                                 )}
                                             </>
-                                        ) : '-'}
-                                    </div>
-                                    <button
-                                        onClick={(e) => handleEditClick(invoice, e)}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            padding: '2px',
-                                            color: '#666'
-                                        }}
-                                        title="Edit charges"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
+                                        )}
+                                    </td>
+
+                                    <td className={styles.totalValue}>Rs. {parseFloat(invoice.total_amount).toLocaleString()}</td>
+                                    <td>
+                                        <div className={styles.dateText}>{invoice.invoice_date}</div>
+                                    </td>
+                                    <td>
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <select
+                                                value={invoice.payment_status || 'PENDING'}
+                                                onChange={(e) => handleStatusChange(invoice.id, e.target.value)}
+                                                className={`${styles.statusSelect} ${styles[invoice.payment_status?.toLowerCase()]}`}
+                                            >
+                                                <option value="PENDING">PENDING</option>
+                                                <option value="PAID">PAID</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <Button variant="ghost" size="sm" icon={Download}></Button>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr><td colSpan="8" className={styles.emptyState}>No financial records found.</td></tr>
                             )}
-                        </td>
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
 
-                        <td>Rs. {parseFloat(invoice.total_amount).toFixed(2)}</td>
-                        <td>{invoice.invoice_date}</td>
-                        <td onClick={(e) => e.stopPropagation()}>
-                            <select
-                                value={invoice.payment_status || 'PENDING'}
-                                onChange={(e) => handleStatusChange(invoice.id, e.target.value)}
-                                className="border rounded px-2 py-1"
-                            >
-                                <option value="PENDING">PENDING</option>
-                                <option value="PAID">PAID</option>
-                            </select>
-                        </td>
-                    </tr>
-                ))}
-            </Table>
-
-            {showModal && selectedInvoice && (
-                <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="INVOICE">
-                    <div className="bg-white">
-                        <InvoiceCard invoice={selectedInvoice} />
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3 justify-end mt-6">
-                            <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-                            <Button variant="primary" onClick={handleDownloadPDF}>Download PDF</Button>
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="Official Invoice Voucher"
+                size="lg"
+                footer={
+                    <>
+                        <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+                        <Button icon={Download} onClick={handleDownloadPDF}>Download PDF</Button>
+                    </>
+                }
+            >
+                {selectedInvoice && <InvoiceCard invoice={selectedInvoice} />}
+            </Modal>
         </div>
     );
 };
 
 export default Invoices;
+
