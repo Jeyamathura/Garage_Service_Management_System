@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import { getBookings } from "../../api/booking.api";
 import { getServices } from "../../api/service.api";
 import { getCustomers } from "../../api/customer.api";
-import styles from "../Dashboard.module.css";
+import Card from "../../components/ui/Card";
+import {
+    Users,
+    Calendar,
+    Settings,
+    CheckCircle,
+    Clock,
+    Activity,
+    TrendingUp,
+    AlertCircle
+} from "lucide-react";
+import styles from "./Dashboard.module.css";
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
@@ -21,7 +32,6 @@ const Dashboard = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Use Promise.allSettled to ensure failure in one doesn't stop others
                 const results = await Promise.allSettled([
                     getBookings(),
                     getServices(),
@@ -31,10 +41,6 @@ const Dashboard = () => {
                 const bookings = results[0].status === 'fulfilled' ? results[0].value : [];
                 const services = results[1].status === 'fulfilled' ? results[1].value : [];
                 const customers = results[2].status === 'fulfilled' ? results[2].value : [];
-
-                if (results[0].status === 'rejected') console.error("Bookings load failed:", results[0].reason);
-                if (results[1].status === 'rejected') console.error("Services load failed:", results[1].reason);
-                if (results[2].status === 'rejected') console.error("Customers load failed:", results[2].reason);
 
                 const pending = bookings.filter((b) => b.status === "PENDING").length;
                 const approved = bookings.filter((b) => b.status === "APPROVED").length;
@@ -51,7 +57,7 @@ const Dashboard = () => {
                     totalCustomers: customers.length,
                 });
             } catch (error) {
-                console.error("Critical dashboard load failure:", error);
+                console.error("Dashboard load failure:", error);
             } finally {
                 setLoading(false);
             }
@@ -60,93 +66,123 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
-    const StatCard = ({ title, value, colorClass, subtitle }) => (
-        <div className={`${styles.card} ${styles[colorClass]} ${styles.cardHover} group cursor-default transition-all duration-300`}>
-            <h3 className={`${styles.cardTitle} group-hover:text-teal-600 transition-colors`}>{title}</h3>
-            <div className="flex items-end justify-between">
-                <p className={styles.cardValue}>{value}</p>
-                {subtitle && <span className="text-xs text-gray-400 font-medium pb-2">{subtitle}</span>}
+    const MainStat = ({ title, value, icon: Icon, color, trend }) => (
+        <Card className={styles.statCard}>
+            <div className={styles.statHeader}>
+                <div className={`${styles.iconBox} ${styles[color]}`}>
+                    <Icon size={24} />
+                </div>
+                {trend && (
+                    <div className={styles.trendBadge}>
+                        <TrendingUp size={12} />
+                        <span>{trend}</span>
+                    </div>
+                )}
             </div>
-            <div className="mt-4 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                <div className={`h-full opacity-60 rounded-full ${colorClass === 'borderYellow' ? 'bg-amber-400' :
-                    colorClass === 'borderBlue' ? 'bg-blue-400' :
-                        colorClass === 'borderIndigo' ? 'bg-indigo-400' :
-                            colorClass === 'borderGreen' ? 'bg-emerald-400' : 'bg-gray-400'
-                    }`} style={{ width: value > 0 ? '70%' : '0%' }}></div>
-            </div>
-        </div>
+            <div className={styles.statValue}>{value}</div>
+            <div className={styles.statTitle}>{title}</div>
+        </Card>
     );
 
     return (
         <div className={styles.container}>
-            {loading && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-60 backdrop-blur-[2px]">
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
-                        <p className="text-teal-800 font-medium animate-pulse">Loading dashboard stats...</p>
-                    </div>
+            <header className={styles.header}>
+                <div>
+                    <h1 className={styles.pageTitle}>Operational Overview</h1>
+                    <p className={styles.pageSubtitle}>Monitor real-time garage performance and service metrics.</p>
                 </div>
-            )}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-teal-800 bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                    Admin Dashboard
-                </h1>
-                <p className="text-gray-500 mt-1">Overview of garage operations and performance</p>
-            </div>
+                <div className={styles.activeLabel}>
+                    <div className={styles.pulse}></div>
+                    <span>Live System Active</span>
+                </div>
+            </header>
 
-            <div className={styles.statsGrid}>
-                <StatCard
-                    title="Pending Bookings"
+            <div className={styles.mainStats}>
+                <MainStat
+                    title="Requests Pending"
                     value={stats.pending}
-                    colorClass="borderYellow"
-                    subtitle="Awaiting Approval"
+                    icon={AlertCircle}
+                    color="orange"
+                    trend="+2 this hour"
                 />
-                <StatCard
-                    title="To Start"
-                    value={stats.approved}
-                    colorClass="borderBlue"
-                    subtitle="Approved"
-                />
-                <StatCard
-                    title="In Progress"
+                <MainStat
+                    title="Active Services"
                     value={stats.inProgress}
-                    colorClass="borderIndigo"
-                    subtitle="Working Now"
+                    icon={Activity}
+                    color="blue"
                 />
-                <StatCard
-                    title="Completed"
-                    value={stats.completed}
-                    colorClass="borderGreen"
-                    subtitle="Ready for Pickup"
-                />
-            </div>
-
-            <div className="mt-12 mb-6">
-                <h2 className="text-xl font-semibold text-teal-800 flex items-center gap-2">
-                    <span className="w-2 h-8 bg-teal-500 rounded-full"></span>
-                    Management Overview
-                </h2>
-            </div>
-
-            <div className={`${styles.statsGrid} ${styles.statsGridThree}`}>
-                <StatCard
+                <MainStat
                     title="Total Customers"
                     value={stats.totalCustomers}
-                    colorClass="borderGray"
+                    icon={Users}
+                    color="purple"
                 />
-                <StatCard
-                    title="Total Services"
-                    value={stats.totalServices}
-                    colorClass="borderGray"
+                <MainStat
+                    title="Success Rate"
+                    value={`${Math.round((stats.completed / stats.totalBookings || 0) * 100)}%`}
+                    icon={CheckCircle}
+                    color="green"
                 />
-                <StatCard
-                    title="Total Bookings"
-                    value={stats.totalBookings}
-                    colorClass="borderGray"
-                />
+            </div>
+
+            <div className={styles.sectionGrid}>
+                <Card title="Booking Pipeline" className={styles.pipelineCard}>
+                    <div className={styles.pipelineList}>
+                        <div className={styles.pipelineItem}>
+                            <div className={styles.pipelineLabel}>
+                                <Clock size={16} />
+                                <span>Pending Review</span>
+                            </div>
+                            <div className={styles.pipelineValue}>{stats.pending}</div>
+                            <div className={styles.pipelineBar}><div style={{ width: `${(stats.pending / stats.totalBookings) * 100}%`, background: '#f59e0b' }}></div></div>
+                        </div>
+                        <div className={styles.pipelineItem}>
+                            <div className={styles.pipelineLabel}>
+                                <Calendar size={16} />
+                                <span>Scheduled / Approved</span>
+                            </div>
+                            <div className={styles.pipelineValue}>{stats.approved}</div>
+                            <div className={styles.pipelineBar}><div style={{ width: `${(stats.approved / stats.totalBookings) * 100}%`, background: '#3b82f6' }}></div></div>
+                        </div>
+                        <div className={styles.pipelineItem}>
+                            <div className={styles.pipelineLabel}>
+                                <Activity size={16} />
+                                <span>In Progress</span>
+                            </div>
+                            <div className={styles.pipelineValue}>{stats.inProgress}</div>
+                            <div className={styles.pipelineBar}><div style={{ width: `${(stats.inProgress / stats.totalBookings) * 100}%`, background: '#6366f1' }}></div></div>
+                        </div>
+                        <div className={styles.pipelineItem}>
+                            <div className={styles.pipelineLabel}>
+                                <CheckCircle size={16} />
+                                <span>Completed Today</span>
+                            </div>
+                            <div className={styles.pipelineValue}>{stats.completed}</div>
+                            <div className={styles.pipelineBar}><div style={{ width: `${(stats.completed / stats.totalBookings) * 100}%`, background: '#10b981' }}></div></div>
+                        </div>
+                    </div>
+                </Card>
+
+                <Card title="System Management" className={styles.managementCard}>
+                    <div className={styles.mgmtGrid}>
+                        <div className={styles.mgmtItem}>
+                            <Settings size={20} />
+                            <span>{stats.totalServices} Active Services</span>
+                        </div>
+                        <div className={styles.mgmtItem}>
+                            <Calendar size={20} />
+                            <span>{stats.totalBookings} Lifetime Bookings</span>
+                        </div>
+                        <div className={styles.mgmtItem}>
+                            <Users size={20} />
+                            <span>{stats.totalCustomers} Registered Clients</span>
+                        </div>
+                    </div>
+                </Card>
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
