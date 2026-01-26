@@ -26,7 +26,7 @@ import CustomerServices from "./pages/customer/Services";
 import CustomerProfile from "./pages/customer/Profile";
 import CustomerInvoices from "./pages/customer/Invoices";
 
-import Headers from "./components/layouts/Header";
+import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
 
 function App() {
@@ -34,48 +34,46 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <div className="main-layout">
-          <Headers />
+          <Header />
           <div className="layout-content">
-            <main style={{ padding: 0 }}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
 
-                {/* Protected Routes */}
-                <Route element={<PrivateRoute />}>
+              {/* Protected Routes */}
+              <Route element={<PrivateRoute />}>
 
-                  {/* Admin Routes */}
-                  <Route element={<RoleRoute role="ADMIN" />}>
-                    <Route path="/admin" element={<AdminLayout />}>
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="services" element={<AdminServices />} />
-                      <Route path="customers" element={<AdminCustomers />} />
-                      <Route path="vehicles" element={<AdminVehicles />} />
-                      <Route path="bookings" element={<AdminBookings />} />
-                      <Route path="invoices" element={<AdminInvoices />} />
-                    </Route>
+                {/* Admin Routes */}
+                <Route element={<RoleRoute role="ADMIN" />}>
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="services" element={<AdminServices />} />
+                    <Route path="customers" element={<AdminCustomers />} />
+                    <Route path="vehicles" element={<AdminVehicles />} />
+                    <Route path="bookings" element={<AdminBookings />} />
+                    <Route path="invoices" element={<AdminInvoices />} />
                   </Route>
-
-                  {/* Customer Routes */}
-                  <Route element={<RoleRoute role="CUSTOMER" />}>
-                    <Route path="/customer" element={<CustomerLayout />}>
-                      <Route path="dashboard" element={<CustomerDashboard />} />
-                      <Route path="bookings" element={<CustomerBookings />} />
-                      <Route path="vehicles" element={<CustomerVehicles />} />
-                      <Route path="services" element={<CustomerServices />} />
-                      <Route path="profile" element={<CustomerProfile />} />
-                      <Route path="invoices" element={<CustomerInvoices />} />
-                    </Route>
-                  </Route>
-
                 </Route>
 
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </main>
+                {/* Customer Routes */}
+                <Route element={<RoleRoute role="CUSTOMER" />}>
+                  <Route path="/customer" element={<CustomerLayout />}>
+                    <Route path="dashboard" element={<CustomerDashboard />} />
+                    <Route path="bookings" element={<CustomerBookings />} />
+                    <Route path="vehicles" element={<CustomerVehicles />} />
+                    <Route path="services" element={<CustomerServices />} />
+                    <Route path="profile" element={<CustomerProfile />} />
+                    <Route path="invoices" element={<CustomerInvoices />} />
+                  </Route>
+                </Route>
+
+              </Route>
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
           </div>
           <Footer />
           <Toaster position="top-center" reverseOrder={false} />
