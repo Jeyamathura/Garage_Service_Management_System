@@ -7,13 +7,9 @@ const CustomerLayout = () => {
   if (role !== "CUSTOMER") return null;
 
   return (
-    <div className="main-layout">
-      <div className="layout-content">
-        <main>
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <main>
+      <Outlet />
+    </main>
   );
 };
 
