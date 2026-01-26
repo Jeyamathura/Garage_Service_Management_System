@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { getBookings, createBooking } from "../../api/booking.api";
 import { getVehicles } from "../../api/vehicle.api";
 import { getServices } from "../../api/service.api";
 import Table from "../../components/ui/Table";
-import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
 import StatusBadge from "../../components/ui/StatusBadge";
-
-import Card from "../../components/ui/Card/Card";
 
 import styles from "./Bookings.module.css";
 
@@ -26,9 +22,19 @@ const MyBookings = () => {
 
   const location = useLocation();
 
+  const fetchBookings = useCallback(async () => {
+    try {
+      const data = await getBookings();
+      setBookings(data);
+    } catch (error) {
+      console.error("Failed to fetch bookings", error);
+      toast.error("Failed to load bookings");
+    }
+  }, []);
+
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [fetchBookings]);
 
   // Handle pre-selected service from navigation state
   useEffect(() => {
@@ -38,16 +44,6 @@ const MyBookings = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-
-  const fetchBookings = async () => {
-    try {
-      const data = await getBookings();
-      setBookings(data);
-    } catch (error) {
-      console.error("Failed to fetch bookings", error);
-      toast.error("Failed to load bookings");
-    }
-  };
 
   const getTodayDate = () => {
     const today = new Date();
