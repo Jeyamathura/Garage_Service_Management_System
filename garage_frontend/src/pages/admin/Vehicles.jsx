@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { getVehicles, deleteVehicle } from "../../api/vehicle.api";
-import Table from "../../components/ui/Table";
+import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import toast from "react-hot-toast";
 import AddVehicleModal from "./AddVehicleModal";
+import {
+    Plus,
+    Search,
+    Car,
+    Trash2,
+    Filter,
+    UserCircle,
+    Calendar,
+    Pencil
+} from "lucide-react";
+
+import styles from "./Vehicles.module.css";
 
 const Vehicles = () => {
     const [vehicles, setVehicles] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentVehicle, setCurrentVehicle] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const fetchVehicles = async () => {
         try {
+            setLoading(true);
             const data = await getVehicles();
             setVehicles(data);
         } catch (error) {
-            console.error("Failed to fetch vehicles", error);
             toast.error("Failed to load vehicles");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -23,83 +40,131 @@ const Vehicles = () => {
         fetchVehicles();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this vehicle?")) {
-            try {
-                await deleteVehicle(id);
-                fetchVehicles();
-                toast.success("Vehicle deleted successfully");
-            } catch (error) {
-                toast.error("Failed to delete vehicle");
-            }
-        }
+    const handleOpenModal = (vehicle = null) => {
+        setCurrentVehicle(vehicle);
+        setIsModalOpen(true);
     };
 
-    return (
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-teal-800">Vehicle Management</h1>
-                <Button
-                    variant="primary"
-                    onClick={() => setIsModalOpen(true)}
-                    className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 border-none"
-                >
-                    Add New Vehicle
-                </Button>
-            </div>
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setCurrentVehicle(null);
+    };
 
-            <Table headers={["ID", "Owner", "Vehicle Number", "Type", "Joined At", "Actions"]}>
-                {vehicles.map((vehicle) => (
-                    <tr key={vehicle.id} className="hover:bg-teal-50/50 transition-colors">
-                        <td className="font-semibold text-teal-700">#{vehicle.id}</td>
-                        <td>
-                            <div className="font-medium text-gray-900">
-                                {vehicle.customer?.user?.first_name} {vehicle.customer?.user?.last_name}
-                            </div>
-                            <div style={{ fontSize: '0.85em', color: '#666' }}>
-                                @{vehicle.customer?.user?.username || 'N/A'}
-                            </div>
-                        </td>
-                        <td>
-                            <div className="font-bold text-gray-800 tracking-wider uppercase">
-                                {vehicle.vehicle_number}
-                            </div>
-                        </td>
-                        <td>
-                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200">
-                                {vehicle.vehicle_type}
-                            </span>
-                        </td>
-                        <td>
-                            <div className="text-xs font-medium text-gray-400">
-                                {new Date(vehicle.customer?.date_joined || vehicle.customer?.created_at).toLocaleDateString(undefined, {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                })}
-                            </div>
-                        </td>
-                        <td>
-                            <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => handleDelete(vehicle.id)}
-                                className="rounded-lg px-4"
-                            >
-                                Delete
-                            </Button>
-                        </td>
-                    </tr>
-                ))}
-            </Table>
+    const filteredVehicles = vehicles.filter(vehicle => {
+        const searchLower = searchQuery.toLowerCase();
+        const ownerName = `${vehicle.customer?.user?.first_name} ${vehicle.customer?.user?.last_name}`.toLowerCase();
+        const vehicleNum = vehicle.vehicle_number.toLowerCase();
+        const username = vehicle.customer?.user?.username?.toLowerCase() || "";
+
+        return ownerName.includes(searchLower) ||
+            vehicleNum.includes(searchLower) ||
+            username.includes(searchLower);
+    });
+
+    return (
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <div>
+                    <h1 className={styles.title}>Vehicle Fleet</h1>
+                    <p className={styles.subtitle}>Manage all registered customer vehicles in the system.</p>
+                </div>
+                <Button onClick={() => handleOpenModal()} icon={Plus}>Add New Vehicle</Button>
+            </header>
+
+            <Card className={styles.tableCard} noPadding>
+                <div className={styles.tableActions}>
+                    <div className={styles.searchWrapper}>
+                        <Search size={18} className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            placeholder="Search by number, owner or username..."
+                            className={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <Button variant="secondary" size="sm" icon={Filter}>Filter</Button>
+                </div>
+
+                <div className="data-table-container">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Vehicle Owner</th>
+                                <th>Plate Number</th>
+                                <th>Classification</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                Array(5).fill(0).map((_, i) => (
+                                    <tr key={i}><td colSpan="6"><div className={styles.skeletonLine}></div></td></tr>
+                                ))
+                            ) : filteredVehicles.length > 0 ? filteredVehicles.map((vehicle) => (
+                                <tr key={vehicle.id}>
+                                    <td className={styles.vehicleId}>VEH-{vehicle.id.toString().padStart(4, '0')}</td>
+                                    <td>
+                                        <div className={styles.ownerProfile}>
+                                            <div className={styles.ownerName}>
+                                                {vehicle.customer?.user?.first_name} {vehicle.customer?.user?.last_name}
+                                            </div>
+                                            <div className={styles.username}>
+                                                @{vehicle.customer?.user?.username || 'N/A'}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.vehicleNumber}>
+                                            {vehicle.vehicle_number}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span className={styles.typeTag}>
+                                            {vehicle.vehicle_type}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div className={styles.dateCell}>
+                                            {new Date(vehicle.created_at || (vehicle.customer?.date_joined)).toLocaleDateString()}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.actions}>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleOpenModal(vehicle)}
+                                                className={styles.editBtn}
+                                            >
+                                                <Pencil size={16} />
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className={styles.emptyState}>
+                                        No vehicles found matching your criteria.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
 
             <AddVehicleModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleCloseModal}
                 onVehicleAdded={fetchVehicles}
+                vehicle={currentVehicle}
             />
         </div>
     );
 };
 
 export default Vehicles;
+
