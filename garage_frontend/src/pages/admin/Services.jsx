@@ -6,14 +6,29 @@ import {
     updateService,
     deleteService,
 } from "../../api/service.api";
-import Table from "../../components/ui/Table";
+import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
+import {
+    Plus,
+    Search,
+    Trash2,
+    Wrench,
+    Banknote,
+    Pencil,
+    FileText,
+    Package
+} from "lucide-react";
+
+import styles from "./Services.module.css";
 
 const Services = () => {
     const [services, setServices] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [submitting, setSubmitting] = useState(false);
     const [currentService, setCurrentService] = useState(null);
     const [formData, setFormData] = useState({
         service_name: "",
@@ -27,11 +42,13 @@ const Services = () => {
 
     const fetchServices = async () => {
         try {
+            setLoading(true);
             const data = await getServices();
             setServices(data);
         } catch (error) {
-            console.error("Failed to fetch services", error);
             toast.error("Failed to load services");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -61,6 +78,7 @@ const Services = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
             if (currentService) {
                 await updateService(currentService.id, formData);
@@ -69,14 +87,11 @@ const Services = () => {
             }
             fetchServices();
             handleCloseModal();
-            toast.success(
-                currentService
-                    ? "Service updated successfully"
-                    : "Service created successfully"
-            );
+            toast.success(currentService ? "Service updated" : "Service created");
         } catch (error) {
-            console.error("Failed to save service", error);
             toast.error("Failed to save service");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -85,115 +100,134 @@ const Services = () => {
             try {
                 await deleteService(id);
                 fetchServices();
-                toast.success("Service deleted successfully");
+                toast.success("Service deleted");
             } catch (error) {
-                console.error("Failed to delete service", error);
                 toast.error("Failed to delete service");
             }
         }
     };
 
-    return (
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-teal-800">Service Management</h1>
-                <Button
-                    variant="primary"
-                    onClick={() => handleOpenModal()}
-                    className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 border-none shadow-md hover:shadow-lg transition-all"
-                >
-                    Add New Service
-                </Button>
-            </div>
+    const filteredServices = services.filter(service => {
+        const searchLower = searchQuery.toLowerCase();
+        return service.service_name.toLowerCase().includes(searchLower) ||
+            service.description?.toLowerCase().includes(searchLower);
+    });
 
-            <Table headers={["Service Name", "Description", "Price", "Actions"]}>
-                {services.map((service) => (
-                    <tr key={service.id} className="hover:bg-teal-50/50 transition-colors">
-                        <td>
-                            <div className="font-bold text-teal-700">{service.service_name}</div>
-                        </td>
-                        <td>
-                            <div className="text-sm text-gray-600 max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
-                                {service.description || <span className="text-gray-300 italic">No description</span>}
-                            </div>
-                        </td>
-                        <td>
-                            <div className="text-emerald-600 font-bold">
-                                Rs. {parseFloat(service.price).toFixed(2)}
-                            </div>
-                        </td>
-                        <td>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => handleOpenModal(service)}
-                                    className="rounded-lg px-4 border-teal-200 text-teal-700 hover:bg-teal-50"
-                                >
-                                    Edit
-                                </Button>
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleDelete(service.id)}
-                                    className="rounded-lg px-4"
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        </td>
-                    </tr>
-                ))}
-            </Table>
+    return (
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <div>
+                    <h1 className={styles.title}>Service Catalog</h1>
+                    <p className={styles.subtitle}>Define and manage service packages offered by the garage.</p>
+                </div>
+                <Button onClick={() => handleOpenModal()} icon={Plus}>Add New Service</Button>
+            </header>
+
+            <Card className={styles.tableCard} noPadding>
+                <div className={styles.tableActions}>
+                    <div className={styles.searchWrapper}>
+                        <Search size={18} className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            placeholder="Search services..."
+                            className={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="data-table-container">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Service Identity</th>
+                                <th>Description</th>
+                                <th>Standard Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                Array(3).fill(0).map((_, i) => (
+                                    <tr key={i}><td colSpan="5"><div className={styles.skeletonLine}></div></td></tr>
+                                ))
+                            ) : filteredServices.length > 0 ? filteredServices.map((service) => (
+                                <tr key={service.id}>
+                                    <td>
+                                        <div className={styles.serviceId}>SRV-{service.id.toString().padStart(4, '0')}</div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.serviceNameRow}>
+                                            <div className={styles.iconBox}><Wrench size={16} /></div>
+                                            <div className={styles.nameLabel}>{service.service_name}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.descriptionText}>
+                                            {service.description || "No detailed description provided."}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.priceTag}>
+                                            Rs. {parseFloat(service.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.actions}>
+                                            <Button variant="ghost" size="sm" onClick={() => handleOpenModal(service)} className={styles.editBtn}><Pencil size={16} /></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(service.id)} className={styles.deleteBtn}><Trash2 size={16} /></Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr><td colSpan="5" className={styles.emptyState}>No service packages registered.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
 
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={currentService ? "EDIT SERVICE" : "ADD NEW SERVICE"}
+                title={currentService ? "Edit Service Plan" : "Create New Service Package"}
+                footer={
+                    <>
+                        <Button variant="secondary" onClick={handleCloseModal}>Cancel</Button>
+                        <Button onClick={handleSubmit} loading={submitting}>{currentService ? "Update" : "Create"}</Button>
+                    </>
+                }
             >
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className={styles.form}>
                     <Input
-                        label="Service Name"
+                        label="Service Identity"
                         name="service_name"
                         value={formData.service_name}
                         onChange={handleChange}
+                        icon={Package}
                         required
-                        placeholder="Enter service name"
-                        className="rounded-xl h-11"
+                        placeholder="e.g. Engine Overhaul"
                     />
                     <Input
-                        label="Description"
+                        label="Service Description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        placeholder="Enter service description"
-                        className="rounded-xl h-11"
+                        icon={FileText}
+                        placeholder="Brief overview of what this service covers"
                     />
                     <Input
-                        label="Price"
+                        label="Standard Market Price (Rs.)"
                         name="price"
                         type="number"
                         value={formData.price}
                         onChange={handleChange}
+                        icon={Banknote}
                         required
                         placeholder="0.00"
-                        className="rounded-xl h-11"
                     />
-                    <div className="flex justify-end gap-3 mt-8">
-                        <Button
-                            variant="secondary"
-                            onClick={handleCloseModal}
-                            className="rounded-xl px-6"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            className="rounded-xl bg-teal-600 border-none px-8 shadow-md hover:shadow-lg transition-all"
-                        >
-                            {currentService ? "Update Service" : "Create Service"}
-                        </Button>
-                    </div>
                 </form>
             </Modal>
         </div>
@@ -201,3 +235,4 @@ const Services = () => {
 };
 
 export default Services;
+
