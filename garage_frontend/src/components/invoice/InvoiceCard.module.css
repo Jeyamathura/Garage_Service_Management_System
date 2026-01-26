@@ -20,6 +20,18 @@
     margin-bottom: 16px;
 }
 
+.brandInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.invoiceLogo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
 .invoiceHeader h2 {
     font-size: 20px;
     font-weight: 700;

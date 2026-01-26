@@ -17,14 +17,17 @@ const InvoiceCard = ({ invoice }) => {
         <div className={styles.invoiceCard}>
             {/* Header */}
             <div className={styles.invoiceHeader}>
-                <div>
-                    <h2>GARAGE NAME</h2>
-                    <p className={styles.invoiceSubTitle}>Vehicle Service Invoice</p>
+                <div className={styles.brandInfo}>
+                    <img src="/logo.png" alt="Logo" className={styles.invoiceLogo} />
+                    <div>
+                        <h2>AlignPro Automotive</h2>
+                        <p className={styles.invoiceSubTitle}>Vehicle Service Invoice</p>
+                    </div>
                 </div>
                 <div className={styles.invoiceMeta}>
-                    <p><strong>Invoice :</strong> {invoice.id}</p>
+                    <p><strong>Invoice :</strong> INV-{invoice.id.toString().padStart(4, '0')}</p>
                     <p><strong>Date:</strong> {invoice.invoice_date}</p>
-                    <p><strong>Booking ID:</strong> {invoice.booking?.id}</p>
+                    <p><strong>Booking ID:</strong> BOOK-{invoice.booking?.id?.toString().padStart(4, '0')}</p>
                 </div>
             </div>
 
@@ -47,7 +50,7 @@ const InvoiceCard = ({ invoice }) => {
                 <thead>
                     <tr>
                         <th>Description</th>
-                        <th align="right">Amount (Rs.)</th>
+                        <th>Amount (Rs.)</th>
                     </tr>
                 </thead>
                 <tbody>
