@@ -2,167 +2,177 @@
     color: var(--teal-900);
 }
 
-.card {
-    background: #fff;
-    border-radius: 1.25rem;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.header {
+.overview {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 2rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 2px solid var(--teal-50);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
 }
 
-.header h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    color: var(--teal-800);
-    letter-spacing: -0.02em;
+.mainInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.status {
-    margin-top: 0.65rem;
+.bookingId {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
 }
 
-.meta {
-    text-align: right;
-    font-size: 0.9rem;
+.createdDate {
+    font-size: 0.875rem;
     color: var(--text-muted);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2.5rem;
-    margin-bottom: 2.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
 }
 
-.section h4 {
-    margin: 0 0 1.25rem 0;
-    text-transform: uppercase;
-    font-size: 0.8rem;
+.section h3 {
+    font-size: 0.875rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--teal-600);
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.section h4::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--teal-100);
+.section h3 svg {
+    color: var(--primary);
 }
 
-.info p {
-    margin: 0.75rem 0;
-    font-size: 1rem;
-    color: #4b5563;
+.detailsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.info strong {
-    color: var(--teal-950);
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.value {
     font-weight: 600;
-    width: 100px;
-    display: inline-block;
+    color: var(--text-main);
+}
+
+.serviceSection,
+.scheduleSection {
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+}
+
+.serviceSection h3,
+.scheduleSection h3 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .serviceCard {
-    background: linear-gradient(to right bottom, var(--teal-50), #fff);
-    border-radius: 1rem;
+    background: #f8fafc;
     padding: 1.5rem;
-    margin-top: 1rem;
-    border: 1px solid var(--teal-100);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
 }
 
-.serviceHeader {
+.serviceMain {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     margin-bottom: 0.75rem;
 }
 
-.serviceHeader h3 {
+.serviceName {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.servicePrice {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.serviceDesc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
     margin: 0;
-    font-size: 1.25rem;
-    color: var(--teal-900);
 }
 
-.price {
-    font-weight: 800;
-    color: var(--teal-600);
-    font-size: 1.25rem;
-}
-
-.description {
-    font-size: 0.95rem;
-    color: #4b5563;
-    line-height: 1.6;
-}
-
-.scheduleSection {
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 2px solid var(--teal-50);
-}
-
-.updateForm {
-    display: flex;
-    align-items: flex-end;
+.scheduleMeta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    background: var(--teal-50);
-    padding: 1.5rem;
-    border-radius: 1rem;
-    margin-top: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.inputGroup {
-    flex: 1;
-}
-
-.inputGroup label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--teal-700);
+.infoLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
 }
 
-.dateInput {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    border: 1.5px solid var(--teal-200);
-    font-family: inherit;
-    font-size: 1rem;
-    color: var(--teal-900);
-    background: #fff;
-    transition: all 0.2s;
-}
-
-.dateInput:focus {
-    outline: none;
-    border-color: var(--teal-500);
-    box-shadow: 0 0 0 4px var(--teal-100);
-}
-
-.updateBtn {
-    background: var(--teal-600);
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+.infoValue {
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    color: var(--text-main);
+}
+
+.infoValue.hasDate {
+    color: var(--success);
+}
+
+.management {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.editForm {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--primary-light);
+}
+
+.dateInput {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+}
+
+.editActions {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .updateBtn:hover {
