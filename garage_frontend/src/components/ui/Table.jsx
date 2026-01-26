@@ -4,8 +4,8 @@ const Table = ({ headers, children }) => {
     return (
         <div style={{ overflowX: 'auto' }}>
             <table className="data-table">
-                <thead style={{textAlign: 'left'}}>
-                    <tr>
+                <thead style={{ textAlign: 'left' }}>
+                    <tr style={{ textAlign: 'left' }}>
                         {headers.map((head, index) => (
                             <th key={index}>{head}</th>
                         ))}
