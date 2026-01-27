@@ -1,144 +1,254 @@
-.requestCard {
-    background: linear-gradient(to bottom right, #ffffff, #f0fdfa);
-    border-radius: 2rem;
-    padding: 3rem;
-    border: 1px solid var(--teal-100);
-    box-shadow: 0 20px 40px -15px rgba(13, 148, 136, 0.12);
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.requestCardHeader {
+.header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     margin-bottom: 2.5rem;
 }
 
-.requestCardTitle {
-    font-size: 1.75rem;
+.title {
+    font-size: 2rem;
     font-weight: 800;
-    color: var(--teal-900);
-    letter-spacing: -0.025em;
+    margin: 0;
+    color: var(--text-main);
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.tableCard {
+    margin-bottom: 2rem;
+}
+
+.tableActions {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+}
+
+.searchWrapper {
     position: relative;
-    padding-left: 1.25rem;
+    flex: 1;
+    max-width: 400px;
 }
 
-.requestCardTitle::before {
-    content: '';
+.searchIcon {
     position: absolute;
-    left: 0;
-    top: 0.25rem;
-    bottom: 0.25rem;
-    width: 5px;
-    background: linear-gradient(to bottom, var(--teal-500), var(--emerald-500));
-    border-radius: 10px;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
 }
 
-.closeButton {
-    background: var(--teal-50);
-    color: var(--teal-600);
-    border: none;
-    padding: 0.65rem;
-    border-radius: 1rem;
+.searchInput {
+    width: 100%;
+    padding: 0.625rem 1rem 0.625rem 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.searchInput:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.filterWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filterIcon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.statusFilter {
+    padding: 0.5rem 1.5rem 0.5rem 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background: white;
+    outline: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    appearance: none;
+    transition: var(--transition);
 }
 
-.closeButton:hover {
-    background: var(--teal-100);
-    color: var(--teal-700);
-    transform: rotate(90deg);
+.statusFilter:focus {
+    border-color: var(--primary-light);
 }
 
-.formGrid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 2rem;
+/* Table Specific Styles */
+.serviceName {
+    font-weight: 600;
+    color: var(--text-main);
 }
 
-@media (min-width: 768px) {
-    .formGrid {
-        grid-template-columns: repeat(3, 1fr);
+.bookingId {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.vehicleInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.vehicleInfo svg {
+    color: var(--text-muted);
+}
+
+.vehicleType {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.dateInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-main);
+}
+
+.dateInfo svg {
+    color: var(--text-muted);
+}
+
+.dateInfo.scheduled {
+    color: var(--primary-dark);
+    font-weight: 500;
+}
+
+.dateInfo.scheduled svg {
+    color: var(--primary);
+}
+
+.pendingText {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 5rem 0 !important;
+    color: var(--text-muted);
+}
+
+.emptyState svg {
+    margin-bottom: 1.5rem;
+    opacity: 0.2;
+}
+
+.emptyState p {
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+}
+
+/* Form Styles */
+.bookingForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.selectWrapper,
+.inputWrapper {
+    position: relative;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.bookingForm select,
+.bookingForm input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.875rem;
+    outline: none;
+    transition: var(--transition);
+    background-color: white;
+}
+
+.bookingForm select:focus,
+.bookingForm input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.skeletonRow {
+    background: white;
+}
+
+.skeletonLine {
+    height: 1.5rem;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+    margin: 0.5rem 0;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
     }
 }
 
-.inputField {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.label {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: var(--teal-700);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
-
-.select,
-.dateInput {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--teal-50);
-    background: white;
-    color: var(--teal-900);
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230d9488'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1.25rem center;
-    background-size: 1.25rem;
-}
-
-.dateInput {
-    background-image: none;
-}
-
-.select:focus,
-.dateInput:focus {
-    outline: none;
-    border-color: var(--teal-400);
-    box-shadow: 0 0 0 5px rgba(13, 148, 136, 0.08);
-    background-color: white;
-    transform: translateY(-2px);
-}
-
-.submitSection {
-    margin-top: 3rem;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.submitButton {
-    background: linear-gradient(to right, #0d9488, #10b981);
-    color: white;
-    font-weight: 800;
-    padding: 1.125rem 3.5rem;
-    border-radius: 1.25rem;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.95rem;
-}
-
-.submitButton:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 20px 25px -5px rgba(13, 148, 136, 0.4);
-    filter: brightness(1.05);
-}
-
-.submitButton:active {
-    transform: translateY(0) scale(0.98);
-}
-
-.submitButton:active {
-    transform: translateY(0);
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
 }
