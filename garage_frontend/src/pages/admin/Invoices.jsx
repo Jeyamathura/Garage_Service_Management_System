@@ -5,10 +5,8 @@ import { getInvoices, updateInvoiceStatus, updateInvoiceCharges, downloadInvoice
 import Card from '../../components/ui/Card';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
-import Badge from '../../components/ui/Badge';
 import InvoiceCard from '../../components/invoice/InvoiceCard';
 import {
-    FileText,
     Download,
     Pencil,
     Check,
@@ -16,7 +14,6 @@ import {
     Search,
     Filter,
     User,
-    Calendar
 } from 'lucide-react';
 
 import styles from './Invoices.module.css';
