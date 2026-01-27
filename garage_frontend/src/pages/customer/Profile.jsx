@@ -13,8 +13,6 @@ import {
   Phone,
   Calendar,
   Pencil,
-  Check,
-  X
 } from "lucide-react";
 import styles from "./Profile.module.css";
 
