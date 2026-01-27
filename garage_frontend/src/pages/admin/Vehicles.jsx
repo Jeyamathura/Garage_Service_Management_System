@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getVehicles, deleteVehicle } from "../../api/vehicle.api";
+import { getVehicles } from "../../api/vehicle.api";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import toast from "react-hot-toast";
@@ -7,11 +7,7 @@ import AddVehicleModal from "./AddVehicleModal";
 import {
     Plus,
     Search,
-    Car,
-    Trash2,
     Filter,
-    UserCircle,
-    Calendar,
     Pencil
 } from "lucide-react";
 
