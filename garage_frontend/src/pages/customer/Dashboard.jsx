@@ -2,16 +2,30 @@ import React, { useEffect, useState, useCallback } from "react";
 import { getBookings } from "../../api/booking.api";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
-import styles from "../Dashboard.module.css";
+import Card from "../../components/ui/Card";
+import Badge from "../../components/ui/Badge";
+import Button from "../../components/ui/Button";
+import {
+    Calendar,
+    Car,
+    FileText,
+    User,
+    Clock,
+    CheckCircle2,
+    ChevronRight,
+    PlusCircle
+} from "lucide-react";
+import styles from "./Dashboard.module.css";
 
 const Dashboard = () => {
     const { user } = useAuth();
     const [upcoming, setUpcoming] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const fetchBookings = useCallback(async () => {
         try {
+            setLoading(true);
             const bookings = await getBookings();
-            // Find next upcoming (Approved or In Progress) by earliest scheduled date
             const next = bookings
                 .filter(
                     (b) =>
@@ -25,6 +39,8 @@ const Dashboard = () => {
             setUpcoming(next);
         } catch (error) {
             console.error("Failed to fetch bookings", error);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -32,101 +48,104 @@ const Dashboard = () => {
         fetchBookings();
     }, [fetchBookings]);
 
-    return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>
-                Welcome,{" "}
-                <span className={styles.username}>
-                    <div className="border-b border-gray-200">
-                        {user?.username}
-                    </div>
-                </span>
-            </h1>
-            {upcoming ? (
-                <div className={styles.cardBlue}>
-                    <h2
-                        className={styles.cardTitle}
-                        style={{
-                            color: "#1e3a8a",
-                            fontSize: "1.25rem",
-                            marginBottom: "1rem",
-                        }}
-                    >
-                        Upcoming Service
-                    </h2>
-                    <p style={{ marginBottom: "0.5rem" }}>
-                        <strong>Vehicle:</strong> {upcoming.vehicle.vehicle_number}
-                    </p>
-                    <p style={{ marginBottom: "0.5rem" }}>
-                        <strong>Service:</strong> {upcoming.service.service_name}
-                    </p>
-                    <p style={{ marginBottom: "0.5rem" }}>
-                        <strong>Date:</strong> {upcoming.scheduled_date}
-                    </p>
-                    <div style={{ marginTop: "1rem" }}>
-                        <span className={`badge badge-${upcoming.status.toLowerCase()}`}>
-                            {upcoming.status}
-                        </span>
-                    </div>
-                </div>
-            ) : (
-                <div className={styles.cardGray}>
-                    <p className={styles.cardTitle} style={{ textTransform: "none" }}>
-                        No upcoming services scheduled.
-                    </p>
-                </div>
-            )}
+    const stats = [
+        { label: "Bookings", icon: Calendar, path: "/customer/bookings", color: "blue", description: "View and manage your service appointments" },
+        { label: "Vehicles", icon: Car, path: "/customer/vehicles", color: "teal", description: "Add or manage your registered vehicles" },
+        { label: "Invoices", icon: FileText, path: "/customer/invoices", color: "purple", description: "Access and pay your service invoices" },
+        { label: "Profile", icon: User, path: "/customer/profile", color: "indigo", description: "Manage your account and preferences" },
+    ];
 
-            <div className={styles.statsGrid}>
-                <Link to="/customer/bookings" style={{ textDecoration: "none" }}>
-                    <div className={`${styles.card} ${styles.cardHover}`}>
-                        <h3
-                            className={styles.cardTitle}
-                            style={{ fontSize: "1.1rem", color: "#0f172a" }}
-                        >
-                            My Bookings
-                        </h3>
-                        <p style={{ color: "#64748b" }}>
-                            Request service and view history.
-                        </p>
-                    </div>
+    return (
+        <div className={styles.dashboardContainer}>
+            <header className={styles.header}>
+                <div className={styles.welcomeSection}>
+                    <h1 className={styles.welcomeTitle}>
+                        Hello <span className={styles.gradientText}>{user?.first_name || user?.username},</span>
+                    </h1>
+                    <p className={styles.welcomeSubtitle}>Track your vehicle maintenance and upcoming services.</p>
+                </div>
+                <Link to="/customer/bookings">
+                    <Button icon={PlusCircle}>New Booking</Button>
                 </Link>
-                <Link to="/customer/vehicles" style={{ textDecoration: "none" }}>
-                    <div className={`${styles.card} ${styles.cardHover}`}>
-                        <h3
-                            className={styles.cardTitle}
-                            style={{ fontSize: "1.1rem", color: "#0f172a" }}
-                        >
-                            My Vehicles
-                        </h3>
-                        <p style={{ color: "#64748b" }}>Manage your vehicles.</p>
+            </header>
+
+            <div className={styles.mainGrid}>
+                {/* Upcoming Service Section */}
+                <div className={styles.prioritySection}>
+                    <h2 className={styles.sectionTitle}>
+                        <Clock size={20} className={styles.icon} />
+                        Next Service
+                    </h2>
+                    {loading ? (
+                        <div className={styles.skeletonCard}></div>
+                    ) : upcoming ? (
+                        <Card className={styles.upcomingCard} noPadding>
+                            <div className={styles.upcomingHeader}>
+                                <div className={styles.serviceInfo}>
+                                    <div className={styles.iconBox}>
+                                        <Car size={24} color="var(--primary)" />
+                                    </div>
+                                    <div>
+                                        <h3>{upcoming.service.service_name}</h3>
+                                        <p>{upcoming.vehicle.vehicle_number} • {upcoming.vehicle.model}</p>
+                                    </div>
+                                </div>
+                                <Badge status={upcoming.status}>{upcoming.status}</Badge>
+                            </div>
+                            <div className={styles.upcomingDetails}>
+                                <div className={styles.detailItem}>
+                                    <Calendar size={16} />
+                                    <span>{new Date(upcoming.scheduled_date).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <Clock size={16} />
+                                    <span>{new Date(upcoming.scheduled_date).toLocaleTimeString(undefined, { timeStyle: 'short' })}</span>
+                                </div>
+                            </div>
+                            <div className={styles.upcomingFooter}>
+                                <Link to="/customer/bookings">
+                                    <Button variant="ghost" size="sm" icon={ChevronRight}>View Details</Button>
+                                </Link>
+                            </div>
+                        </Card>
+                    ) : (
+                        <Card className={styles.emptyStateCard}>
+                            <div className={styles.emptyIcon}>
+                                <CheckCircle2 size={40} color="var(--success)" />
+                            </div>
+                            <h3>All Caught Up!</h3>
+                            <p>No upcoming services scheduled for your vehicles.</p>
+                            <Link to="/customer/bookings">
+                                <Button variant="outline" size="sm">Schedule Now</Button>
+                            </Link>
+                        </Card>
+                    )}
+                </div>
+
+                {/* Quick Actions Grid */}
+                <div className={styles.actionsGrid}>
+                    <h2 className={styles.sectionTitle}>Quick Actions</h2>
+                    <div className={styles.statsGrid}>
+                        {stats.map((stat) => (
+                            <Link key={stat.label} to={stat.path} className={styles.statLink}>
+                                <Card className={styles.statCard}>
+                                    <div className={`${styles.statIcon} ${styles[stat.color]}`}>
+                                        <stat.icon size={24} />
+                                    </div>
+                                    <h3>{stat.label}</h3>
+                                    <p>{stat.description}</p>
+                                    <div className={styles.cardArrow}>
+                                        <ChevronRight size={16} />
+                                    </div>
+                                </Card>
+                            </Link>
+                        ))}
                     </div>
-                </Link>
-                <Link to="/customer/invoices" style={{ textDecoration: "none" }}>
-                    <div className={`${styles.card} ${styles.cardHover}`}>
-                        <h3
-                            className={styles.cardTitle}
-                            style={{ fontSize: "1.1rem", color: "#0f172a" }}
-                        >
-                            My Invoices
-                        </h3>
-                        <p style={{ color: "#64748b" }}>View payment history.</p>
-                    </div>
-                </Link>
-                <Link to="/customer/profile" style={{ textDecoration: "none" }}>
-                    <div className={`${styles.card} ${styles.cardHover}`}>
-                        <h3
-                            className={styles.cardTitle}
-                            style={{ fontSize: "1.1rem", color: "#0f172a" }}
-                        >
-                            My Profile
-                        </h3>
-                        <p style={{ color: "#64748b" }}>Update your contact details.</p>
-                    </div>
-                </Link>
+                </div>
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
