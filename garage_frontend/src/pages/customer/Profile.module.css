@@ -1,274 +1,171 @@
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-    animation: fadeIn 0.6s ease-out;
+.hubContainer {
+    max-width: 900px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+    animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.header {
+.hubHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 3rem;
 }
 
-.title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-}
-
-@media (min-width: 1024px) {
-    .grid {
-        grid-template-columns: 340px 1fr;
-    }
-}
-
-.profileCard {
-    background: white;
-    padding: 0;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(20, 184, 166, 0.1);
+.identity {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    gap: 2rem;
 }
 
-.profileCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 25px -5px rgba(20, 184, 166, 0.1), 0 10px 10px -5px rgba(20, 184, 166, 0.04);
-}
-
-.cardHeader {
-    width: 100%;
-    height: 100px;
-    background: linear-gradient(135deg, #0d9488 0%, #10b981 50%, #34d399 100%);
-    position: relative;
-}
-
-.avatarWrapper {
-    margin-top: -50px;
-    position: relative;
-    z-index: 1;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    background: white;
-    color: #0d9488;
-    border-radius: 50%;
+.initialsBox {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--teal-600) 0%, var(--teal-500) 100%);
+    color: white;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: 800;
-    border: 4px solid white;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    box-shadow: 0 12px 24px -8px rgba(13, 148, 136, 0.4);
 }
 
-.profileCard:hover .avatar {
-    transform: scale(1.05);
-}
-
-.profileInfo {
-    padding: 1.5rem 2rem 2.5rem;
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
+.hubTitle {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--teal-900);
     margin: 0;
+    letter-spacing: -0.03em;
 }
 
-.username {
-    color: #0d9488;
-    font-size: 1rem;
-    font-weight: 600;
+.hubSubtitle {
+    color: var(--teal-600);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     margin-top: 0.25rem;
 }
 
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: #f0fdfa;
-    color: #0d9488;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.memberSince {
-    width: 100%;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid #f3f4f6;
-}
-
-.infoRow {
+.hubContent {
     display: flex;
-    justify-content: space-between;
-    font-size: 0.875rem;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.hubCard {
+    padding: 3rem !important;
+    background: white;
+    border-radius: 2rem;
+}
+
+.cardHeader {
+    margin-bottom: 3rem;
+    border-bottom: 1px dashed var(--teal-100);
+    padding-bottom: 2rem;
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--teal-900);
+}
+
+.cardSubtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.infoHub {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+}
+
+.hubItem {
+    padding: 1.5rem;
+    background: var(--bg-app);
+    border-radius: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.hubItem:hover {
+    background: white;
+    border-color: var(--teal-100);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-4px);
+}
+
+.hubLabel {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--teal-500);
+    letter-spacing: 0.1em;
     margin-bottom: 0.75rem;
 }
 
-.infoRow:last-child {
-    margin-bottom: 0;
+.hubValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--teal-900);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.label {
-    color: #6b7280;
-    font-weight: 500;
+.hubValue svg {
+    color: var(--teal-400);
 }
 
-.value {
-    color: #111827;
-    font-weight: 600;
-}
-
-.detailsCard {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    padding: 2.5rem;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(20, 184, 166, 0.1);
-}
-
-.section {
+/* Form Styles */
+.hubForm {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-}
-
-.fieldGroup {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 0;
-    /* Reset margin for grid rows */
-}
-
-@media (min-width: 640px) {
-    .fieldGroup {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-/* Fix for Input component overlap: neutralize the global .input-group margin inside our cards */
-.detailsCard :global(.input-group) {
-    margin-bottom: 0 !important;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-}
-
-.fieldLabel {
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-    margin-bottom: 0.5rem;
-}
-
-.fieldValue {
-    font-size: 1.125rem;
-    color: #111827;
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    background: #f0fdfa;
-    border-radius: 0.75rem;
-    border: 1px solid #ccfbf1;
 }
 
 .formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.hubActions {
     display: flex;
-    flex-direction: column;
+    justify-content: flex-end;
     gap: 1.5rem;
-    /* Consistent gap between form segments */
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
 }
 
-.buttonGroup {
-    display: flex;
-    gap: 1.25rem;
-    margin-top: 2.5rem;
-    padding-top: 2.5rem;
-    border-top: 1px solid #f3f4f6;
-}
-
-.loadingWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-}
-
-.loadingText {
-    color: #0d9488;
-    font-weight: 600;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: .5;
-        transform: scale(1.05);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.noProfile {
-    padding: 3rem;
-}
-
-.alert {
-    background-color: #fffbeb;
-    border-left: 5px solid #f59e0b;
-    padding: 1.5rem;
-    border-radius: 1rem;
-    color: #92400e;
+.securityHint {
+    text-align: center;
+    padding: 2rem;
+    background: var(--teal-50);
+    border-radius: 1.5rem;
+    color: var(--teal-800);
+    font-size: 0.875rem;
     font-weight: 500;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .hubHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+
+    .infoHub {
+        grid-template-columns: 1fr;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
 }
