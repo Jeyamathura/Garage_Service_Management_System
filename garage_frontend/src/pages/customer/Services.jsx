@@ -2,18 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { getServices } from '../../api/service.api';
 import ServiceCard from '../../components/service/ServiceCard';
 import { useNavigate } from 'react-router-dom';
+import styles from './Services.module.css';
+import { Sparkles } from 'lucide-react';
 
 const Services = () => {
     const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchServices = async () => {
             try {
+                setLoading(true);
                 const data = await getServices();
                 setServices(data);
             } catch (error) {
                 console.error("Failed to fetch services", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchServices();
@@ -24,14 +30,24 @@ const Services = () => {
     };
 
     return (
-        <div className="p-4">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-teal-800">Available Services</h1>
-                <p className="text-gray-500 mt-1">Select a premium service for your vehicle</p>
-            </div>
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <div className={styles.headerContent}>
+                    <h1 className={styles.title}>Available Services</h1>
+                    <p className={styles.subtitle}>Select a premium service for your vehicle</p>
+                </div>
+                <div className={styles.badge}>
+                    <Sparkles size={16} />
+                    <span>Premium Care</span>
+                </div>
+            </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {services.map((service) => (
+            <div className={styles.grid}>
+                {loading ? (
+                    Array(3).fill(0).map((_, i) => (
+                        <div key={i} className={styles.skeleton}></div>
+                    ))
+                ) : services.map((service) => (
                     <ServiceCard
                         key={service.id}
                         service={service}
@@ -44,3 +60,4 @@ const Services = () => {
 };
 
 export default Services;
+
