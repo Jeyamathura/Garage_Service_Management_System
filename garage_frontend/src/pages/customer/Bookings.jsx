@@ -16,7 +16,6 @@ import {
   Clock,
   Filter,
   Search,
-  ChevronRight
 } from "lucide-react";
 
 import styles from "./Bookings.module.css";
