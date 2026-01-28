@@ -3,6 +3,8 @@ import { registerCustomer } from "../../api/customer.api";
 import toast from "react-hot-toast";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Modal from "../../components/ui/Modal";
+import { User, Lock, Mail, Phone } from "lucide-react";
 
 const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded }) => {
     const [formData, setFormData] = useState({
@@ -14,8 +16,6 @@ const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded }) => {
         phone: "",
     });
     const [loading, setLoading] = useState(false);
-
-    if (!isOpen) return null;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,108 +57,76 @@ const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl transform transition-all border border-teal-100">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-teal-800 bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                        Add New Customer
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-teal-600 transition-colors"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Register New Customer"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose} disabled={loading}>Cancel</Button>
+                    <Button onClick={handleSubmit} loading={loading} variant="primary">Create Account</Button>
+                </>
+            }
+        >
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <Input
+                    label="Account Username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    icon={User}
+                    placeholder="e.g. johndoe"
+                />
+                <Input
+                    label="Secure Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    icon={Lock}
+                    placeholder="Min 8 characters"
+                />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <Input
+                        label="First Name"
+                        name="first_name"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                        required
+                        placeholder="First Name"
+                    />
+                    <Input
+                        label="Last Name"
+                        name="last_name"
+                        value={formData.last_name}
+                        onChange={handleChange}
+                        required
+                        placeholder="Last Name"
+                    />
                 </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                        label="Username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                        placeholder="Enter username"
-                    />
-                    <Input
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        placeholder="Enter password"
-                    />
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            label="First Name"
-                            name="first_name"
-                            value={formData.first_name}
-                            onChange={handleChange}
-                            required
-                            placeholder="First Name"
-                        />
-                        <Input
-                            label="Last Name"
-                            name="last_name"
-                            value={formData.last_name}
-                            onChange={handleChange}
-                            required
-                            placeholder="Last Name"
-                        />
-                    </div>
-                    <Input
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        placeholder="Email address"
-                    />
-                    <Input
-                        label="Phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        placeholder="Phone number (10 digits)"
-                    />
-
-                    <div className="flex gap-4 mt-8">
-                        <Button
-                            variant="secondary"
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 rounded-xl h-11"
-                            disabled={loading}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="primary"
-                            type="submit"
-                            className="flex-1 rounded-xl h-11 bg-gradient-to-r from-teal-600 to-emerald-600 border-none hover:shadow-lg hover:shadow-teal-200 transition-all"
-                            disabled={loading}
-                        >
-                            {loading ? "Creating..." : "Create Customer"}
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <Input
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    icon={Mail}
+                    placeholder="customer@example.com"
+                />
+                <Input
+                    label="Contact Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    icon={Phone}
+                    placeholder="10 digit mobile number"
+                />
+            </form>
+        </Modal>
     );
 };
 
