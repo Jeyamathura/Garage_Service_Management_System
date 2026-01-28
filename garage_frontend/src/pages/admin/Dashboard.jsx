@@ -26,11 +26,11 @@ const Dashboard = () => {
         totalCustomers: 0,
     });
 
-    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
+
             try {
                 const results = await Promise.allSettled([
                     getBookings(),
@@ -58,8 +58,6 @@ const Dashboard = () => {
                 });
             } catch (error) {
                 console.error("Dashboard load failure:", error);
-            } finally {
-                setLoading(false);
             }
         };
 
