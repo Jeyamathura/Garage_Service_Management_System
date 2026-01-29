@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
@@ -7,7 +7,6 @@ import {
   rejectBooking,
   startBooking,
   completeBooking,
-  deleteBooking,
 } from "../../api/booking.api";
 import { createInvoice } from "../../api/invoice.api";
 import Card from "../../components/ui/Card";
@@ -17,6 +16,7 @@ import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
 import AddBookingModal from "./AddBookingModal";
 import BookingDetails from "../../components/booking/BookingDetails";
+import { confirmAction } from "../../utils/confirmation";
 import {
   Plus,
   Search,
@@ -30,8 +30,6 @@ import {
   Car,
   Settings,
   Calendar,
-  AlertCircle,
-  Pencil
 } from "lucide-react";
 
 import styles from "./Bookings.module.css";
@@ -53,11 +51,7 @@ const Bookings = () => {
   const [additionalChargeDescription, setAdditionalChargeDescription] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getBookings();
@@ -73,7 +67,11 @@ const Bookings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedViewBooking]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
 
   const filteredBookings = bookings.filter(booking => {
     const searchLower = searchQuery.toLowerCase();
@@ -113,19 +111,28 @@ const Bookings = () => {
   };
 
   const handleReject = async (id) => {
-    if (window.confirm("Reject this booking?")) {
-      await rejectBooking(id);
-      fetchBookings();
-      toast.success("Booking rejected");
-    }
+    confirmAction({
+      title: "Reject Booking",
+      message: "Are you sure you want to reject this request? The customer will be notified.",
+      onConfirm: async () => {
+        await rejectBooking(id);
+        fetchBookings();
+        toast.success("Booking rejected");
+      }
+    });
   };
 
   const handleStart = async (id) => {
-    if (window.confirm("Start service for this booking?")) {
-      await startBooking(id);
-      fetchBookings();
-      toast.success("Service started");
-    }
+    confirmAction({
+      title: "Start Service",
+      message: "Begin the maintenance process for this vehicle? Status will change to In Progress.",
+      variant: "primary",
+      onConfirm: async () => {
+        await startBooking(id);
+        fetchBookings();
+        toast.success("Service started");
+      }
+    });
   };
 
   const handleComplete = async (id) => {
