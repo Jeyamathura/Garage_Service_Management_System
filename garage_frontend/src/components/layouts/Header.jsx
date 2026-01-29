@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import styles from './Header.module.css';
 import { useAuth } from '../../auth/AuthContext';
+import toast from 'react-hot-toast';
+import { confirmAction } from '../../utils/confirmation';
 import {
   LogOut,
   LayoutDashboard,
@@ -21,6 +23,17 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    confirmAction({
+      title: "Confirm Logout",
+      message: "Are you sure you want to log out of Your Account?",
+      onConfirm: () => {
+        logout();
+        toast.success("Successfully logged out!");
+      }
+    });
+  };
 
   const adminLinks = [
     { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
@@ -82,7 +95,7 @@ const Header = () => {
               </div>
 
               <div className={styles.authGroup}>
-                <button onClick={logout} className={styles.logoutBtn}>
+                <button onClick={handleLogout} className={styles.logoutBtn}>
                   <LogOut size={18} />
                   <span>Logout</span>
                 </button>
