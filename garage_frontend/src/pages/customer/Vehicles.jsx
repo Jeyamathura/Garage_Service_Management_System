@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from '../../api/vehicle.api';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
+import { confirmAction } from '../../utils/confirmation';
 import {
     Car,
     Trash2,
@@ -28,11 +29,7 @@ const Vehicles = () => {
 
     const predefinedTypes = ["Car", "Motorcycle", "Van", "SUV", "Truck"];
 
-    useEffect(() => {
-        fetchVehicles();
-    }, []);
-
-    const fetchVehicles = async () => {
+    const fetchVehicles = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getVehicles();
@@ -42,7 +39,11 @@ const Vehicles = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchVehicles();
+    }, [fetchVehicles]);
 
     const handleOpenModal = (vehicle = null) => {
         if (vehicle) {
@@ -111,15 +112,19 @@ const Vehicles = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to remove this vehicle?")) {
-            try {
-                await deleteVehicle(id);
-                fetchVehicles();
-                toast.success("Vehicle removed successfully");
-            } catch (error) {
-                toast.error("Failed to delete vehicle");
+        confirmAction({
+            title: "Remove Vehicle",
+            message: "Are you sure you want to remove this vehicle? This will also affect any associated booking history links.",
+            onConfirm: async () => {
+                try {
+                    await deleteVehicle(id);
+                    fetchVehicles();
+                    toast.success("Vehicle removed successfully");
+                } catch (error) {
+                    toast.error("Failed to delete vehicle");
+                }
             }
-        }
+        });
     };
 
     const filteredVehicles = vehicles.filter(vehicle => {
