@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import {
     getServices,
@@ -10,6 +10,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
+import { confirmAction } from "../../utils/confirmation";
 import {
     Plus,
     Search,
@@ -36,11 +37,7 @@ const Services = () => {
         price: "",
     });
 
-    useEffect(() => {
-        fetchServices();
-    }, []);
-
-    const fetchServices = async () => {
+    const fetchServices = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getServices();
@@ -50,7 +47,11 @@ const Services = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchServices();
+    }, [fetchServices]);
 
     const handleOpenModal = (service = null) => {
         if (service) {
@@ -96,15 +97,19 @@ const Services = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this service?")) {
-            try {
-                await deleteService(id);
-                fetchServices();
-                toast.success("Service deleted");
-            } catch (error) {
-                toast.error("Failed to delete service");
+        confirmAction({
+            title: "Delete Service",
+            message: "Are you sure you want to permanently delete this service package? This action cannot be undone.",
+            onConfirm: async () => {
+                try {
+                    await deleteService(id);
+                    fetchServices();
+                    toast.success("Service deleted");
+                } catch (error) {
+                    toast.error("Failed to delete service");
+                }
             }
-        }
+        });
     };
 
     const filteredServices = services.filter(service => {
