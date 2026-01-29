@@ -12,12 +12,22 @@ const AuthForm = ({ config, onSubmit, error }) => {
 
   const [formData, setFormData] = useState(initialState);
 
+  const [localError, setLocalError] = useState("");
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (localError) setLocalError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate password confirmation if field exists
+    if (formData.confirmPassword !== undefined && formData.password !== formData.confirmPassword) {
+      setLocalError("Passwords do not match");
+      return;
+    }
+
     onSubmit(formData);
   };
 
@@ -26,7 +36,7 @@ const AuthForm = ({ config, onSubmit, error }) => {
       <h1 className={styles.title}>{config.title}</h1>
       <p className={styles.subtitle}>{config.subtitle}</p>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {(error || localError) && <p className={styles.error}>{error || localError}</p>}
 
       <form className={styles.form} onSubmit={handleSubmit}>
         {config.fields.map((field) => (
