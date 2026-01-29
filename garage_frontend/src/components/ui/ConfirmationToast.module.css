@@ -1,0 +1,135 @@
+.confirmToast {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    min-width: 320px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    z-index: 10000;
+}
+
+.confirmHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.confirmIcon {
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.danger {
+    color: #e11d48;
+    background: #fff1f2;
+}
+
+.warning {
+    color: #d97706;
+    background: #fffbeb;
+}
+
+.primary {
+    color: var(--primary);
+    background: var(--teal-50);
+}
+
+.confirmTitle {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.confirmMessage {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.confirmActions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.cancelBtn {
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cancelBtn:hover {
+    background: var(--border);
+}
+
+.confirmBtn {
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dangerBtn {
+    background: #e11d48;
+}
+
+.dangerBtn:hover {
+    background: #be123c;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
+}
+
+.warningBtn {
+    background: #d97706;
+}
+
+.warningBtn:hover {
+    background: #b45309;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+}
+
+.primaryBtn {
+    background: var(--primary);
+}
+
+.primaryBtn:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(19, 78, 74, 0.2);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animateEnter {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animateLeave {
+    opacity: 0;
+    transition: opacity 0.2s ease-in;
+}
