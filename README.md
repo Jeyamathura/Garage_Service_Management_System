@@ -1,5 +1,5 @@
+---
 # Garage Backend – Django Setup
-
 ---
 
 This repository contains the backend setup for a Django-based project using:
@@ -230,3 +230,27 @@ http://127.0.0.1:8000/
 
 * If `where python` does not point to `venv`, re-activate the virtual environment.
 * If MySQL connection fails, verify credentials and that the MySQL service is running.
+
+---
+
+# Garage Frontend Setup (React)
+
+---
+### Prerequisites
+
+- **Node.js**: v18.x or higher
+- **npm**: v9.x or higher
+
+### Step 1: Install Dependencies
+
+```bash
+cd garage_frontend
+npm install
+```
+
+### Step 2: Start Development Server
+
+```bash
+npm start
+```
+The application will be available at [http://localhost:3000](http://localhost:3000).
