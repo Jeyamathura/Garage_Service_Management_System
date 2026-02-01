@@ -210,8 +210,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         invoice = self.get_object()
         pdf_content = InvoiceService.generate_invoice_pdf(invoice)
         
-        response = HttpResponse(pdf_content, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.id}.txt"'
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.id}.pdf"'
         return response
 
 # -------------------
