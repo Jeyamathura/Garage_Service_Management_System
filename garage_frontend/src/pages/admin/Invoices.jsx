@@ -285,7 +285,15 @@ const Invoices = () => {
                                         </div>
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
-                                        <Button variant="ghost" size="sm" icon={Download}></Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            icon={Download}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                downloadInvoicePDF(invoice.id);
+                                            }}
+                                        ></Button>
                                     </td>
                                 </tr>
                             )) : (
