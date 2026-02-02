@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getInvoices } from '../../api/invoice.api';
+import { getInvoices, downloadInvoicePDF } from '../../api/invoice.api';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
-import { FileText, Calendar, Search } from 'lucide-react';
+import Button from '../../components/ui/Button';
+import { FileText, Calendar, Search, Download } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const MyInvoices = () => {
     const [invoices, setInvoices] = useState([]);
@@ -22,6 +24,15 @@ const MyInvoices = () => {
             console.error("Failed to fetch invoices", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDownload = async (id) => {
+        try {
+            await downloadInvoicePDF(id);
+            toast.success("Download started");
+        } catch (error) {
+            toast.error("Failed to download PDF");
         }
     };
 
@@ -65,12 +76,13 @@ const MyInvoices = () => {
                                 <th>Service / Plan</th>
                                 <th>Total Amount</th>
                                 <th>Billed Date</th>
-                                <th style={{ textAlign: 'right' }}>Status</th>
+                                <th>Status</th>
+                                <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="4">Loading financial records...</td></tr>
+                                <tr><td colSpan="5">Loading financial records...</td></tr>
                             ) : filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => (
                                 <tr key={invoice.id}>
                                     <td>
@@ -92,12 +104,20 @@ const MyInvoices = () => {
                                             {invoice.invoice_date}
                                         </div>
                                     </td>
-                                    <td style={{ textAlign: 'right' }}>
+                                    <td>
                                         <Badge status={invoice.payment_status}>{invoice.payment_status}</Badge>
+                                    </td>
+                                    <td style={{ textAlign: 'right' }}>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            icon={Download}
+                                            onClick={() => handleDownload(invoice.id)}
+                                        ></Button>
                                     </td>
                                 </tr>
                             )) : (
-                                <tr><td colSpan="4" style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>No invoices matching your search.</td></tr>
+                                <tr><td colSpan="5" style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>No invoices matching your search.</td></tr>
                             )}
                         </tbody>
                     </table>
