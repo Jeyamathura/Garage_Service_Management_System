@@ -1,7 +1,7 @@
 
 ----------
 
-# Garage Service Management System - Backend Setup
+# Garage Service Management System - Backend Detailed Overview
 
 ## Technology Stack
 
@@ -282,22 +282,33 @@ COLLATE utf8mb4_unicode_ci;
 ### 7.3 Configure `settings.py`
 
 ```python
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'garage_service_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME', 'garage_service_db'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
         },
     }
 }
-
 ```
+> **Important:** You must create a `.env` file in the `garage_backend/` directory to define these variables.
+>
+> **Structure of `.env`:**
+> ```env
+> DB_NAME=garage_service_db
+> DB_USER=root
+> DB_PASSWORD=your_db_password
+> DB_HOST=localhost
+> DB_PORT=3306
+> ```
 
 ### 7.4 Verify Connection
 
