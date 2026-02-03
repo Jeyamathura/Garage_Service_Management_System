@@ -19,6 +19,8 @@
     box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
+    width: 90%;
+    /* Ensure it doesn't touch edges on mobile */
     max-height: 90vh;
     position: relative;
     animation: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -73,6 +75,9 @@
 .modal-body {
     padding: 1.5rem;
     overflow-y: auto;
+    /* Fallback/Explicit height constraint */
+    max-height: calc(90vh - 130px);
+    width: 100%;
 }
 
 .modal-footer {
