@@ -1,5 +1,5 @@
 ---
-# Garage Backend – Django Setup
+# Garage Backend Setup (Django)
 ---
 
 This repository contains the backend setup for a Django-based project using:
@@ -91,7 +91,17 @@ pip install mysqlclient
 ```
 
 > If this fails on Windows, you can use `pymysql` as a fallback.
+```bash
+pip install pymysql
+```
+> Modify garage_backend/_init_.py
+> Open: garage_backend/_init_.py
 
+> Add:
+> ```bash
+> import pymysql
+> pymysql.install_as_MySQLdb()
+>```
 ---
 
 ### JWT Authentication
@@ -131,24 +141,20 @@ COLLATE utf8mb4_unicode_ci;
 
 ### Configure Database Settings
 
-Edit `settings.py` if there are any changes:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'garage_service_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        },
-    }
-}
+```bash
+import os
 ```
+
+create the env file, you can rename the .env.example to .env and edit the database details.
+
+> **Structure of `.env`:**
+> ```env
+> DB_NAME=garage_service_db
+> DB_USER=root
+> DB_PASSWORD=your_db_password
+> DB_HOST=localhost
+> DB_PORT=3306
+> ```
 
 ### Verify Database Connection
 
