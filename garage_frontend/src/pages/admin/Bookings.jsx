@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
@@ -51,6 +51,14 @@ const Bookings = () => {
   const [additionalChargeDescription, setAdditionalChargeDescription] = useState("");
   const navigate = useNavigate();
 
+  // Use a ref to track the currently selected booking for viewing
+  // This avoids adding selectedViewBooking as a dependency to fetchBookings, which causes a loop
+  const selectedViewBookingRef = useRef(selectedViewBooking);
+
+  useEffect(() => {
+    selectedViewBookingRef.current = selectedViewBooking;
+  }, [selectedViewBooking]);
+
   const fetchBookings = useCallback(async () => {
     try {
       setLoading(true);
@@ -58,16 +66,21 @@ const Bookings = () => {
       const validBookings = Array.isArray(data) ? data.filter(Boolean) : [];
       setBookings(validBookings);
 
-      if (selectedViewBooking) {
-        const updated = validBookings.find(b => b.id === selectedViewBooking.id);
-        if (updated) setSelectedViewBooking(updated);
+      if (selectedViewBookingRef.current) {
+        const updated = validBookings.find(b => b.id === selectedViewBookingRef.current.id);
+        if (updated) {
+          // Only update if there are actual changes to avoid unnecessary re-renders
+          if (JSON.stringify(updated) !== JSON.stringify(selectedViewBookingRef.current)) {
+            setSelectedViewBooking(updated);
+          }
+        }
       }
     } catch (error) {
       toast.error("Failed to load bookings");
     } finally {
       setLoading(false);
     }
-  }, [selectedViewBooking]);
+  }, []);
 
   useEffect(() => {
     fetchBookings();
