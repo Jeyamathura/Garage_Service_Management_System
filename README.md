@@ -104,7 +104,7 @@ cd garage_backend
 > ```bash
 > pip install -r requirements.txt
 > ```
-
+> If it is successful, jump to Step 7
 ---
 
 ### Manual Installation (Alternative)
