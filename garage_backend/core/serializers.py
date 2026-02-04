@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'role',
             'date_joined',
+            'is_active',
         ]
         read_only_fields = [
             'id',
@@ -311,6 +312,22 @@ class InvoiceSerializer(serializers.ModelSerializer):
 # Token Serializer
 # -------------------
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # Check if user exists and is inactive before standard validation
+        from .models import User
+        username = attrs.get('username')
+        try:
+            user = User.objects.get(username=username)
+            if not user.is_active:
+                raise serializers.ValidationError({
+                    'detail': 'Your account has been suspended. Please contact support.',
+                    'code': 'user_suspended'
+                })
+        except User.DoesNotExist:
+            pass  # Let the standard validation handle this
+        
+        return super().validate(attrs)
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
