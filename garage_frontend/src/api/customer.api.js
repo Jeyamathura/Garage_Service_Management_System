@@ -30,3 +30,8 @@ export const registerCustomer = async (data) => {
   const response = await api.post("/customers/", data);
   return response.data;
 };
+
+export const toggleCustomerStatus = async (id) => {
+  const response = await api.post(`/customers/${id}/toggle_status/`);
+  return response.data;
+};
