@@ -26,7 +26,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    // Skip redirect for login/token endpoint - let the login page handle errors
+    const isLoginRequest = error.config?.url?.includes('/token/');
+
+    if (error.response && error.response.status === 401 && !isLoginRequest) {
       clearTokens();
       window.location.href = "/login";
     }
