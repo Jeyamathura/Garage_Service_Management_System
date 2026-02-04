@@ -189,6 +189,24 @@
     border-color: var(--primary-light);
 }
 
+.suspendBtn {
+    color: var(--error);
+}
+
+.suspendBtn:hover {
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+.activateBtn {
+    color: var(--success);
+}
+
+.activateBtn:hover {
+    background: #f0fdf4 !important;
+    color: #15803d !important;
+}
+
 .inlineInputGroup {
     display: flex;
     align-items: center;
