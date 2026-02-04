@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getCustomers, updateCustomerProfile } from "../../api/customer.api";
+import { getCustomers, updateCustomerProfile, toggleCustomerStatus } from "../../api/customer.api";
 import Card from "../../components/ui/Card";
+import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import AddCustomerModal from "./AddCustomerModal";
 import AddBookingModal from "./AddBookingModal";
@@ -16,7 +17,9 @@ import {
   X,
   PlusCircle,
   Filter,
-  Pencil
+  Pencil,
+  Shield,
+  ShieldOff
 } from "lucide-react";
 
 import styles from "./Customers.module.css";
@@ -86,6 +89,88 @@ const Customers = () => {
     }
   };
 
+  const handleToggleStatus = async (customer) => {
+    const isCurrentlyActive = customer.user?.is_active;
+
+    // Only show confirmation for suspend action
+    if (isCurrentlyActive) {
+      toast((t) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>Are you sure you want to suspend <strong>{customer.user?.first_name} {customer.user?.last_name}</strong>?</span>
+          <span style={{ fontSize: '0.875rem', color: '#64748b' }}>This will prevent them from logging in.</span>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                performToggle(customer);
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Yes, Suspend
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#e2e8f0',
+                color: '#475569',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ), { duration: 10000 });
+      return;
+    }
+
+    performToggle(customer);
+  };
+
+  const performToggle = async (customer) => {
+    try {
+      const response = await toggleCustomerStatus(customer.id);
+
+      setCustomers(prevCustomers => prevCustomers.map(c => {
+        if (c.id === customer.id) {
+          return {
+            ...c,
+            user: { ...c.user, is_active: response.is_active }
+          };
+        }
+        return c;
+      }));
+
+      if (response.is_active) {
+        toast.success(`Customer activated successfully`);
+      } else {
+        toast(`Customer suspended`, {
+          icon: '⚠️',
+          style: {
+            background: '#fef2f2',
+            color: '#b91c1c',
+            border: '1px solid #fecaca',
+            fontWeight: '600'
+          }
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to update customer status");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditValues(prev => ({
@@ -143,6 +228,7 @@ const Customers = () => {
               <tr>
                 <th>ID</th>
                 <th>Customer Identity</th>
+                <th>Status</th>
                 <th>Contact Details</th>
                 <th>Registration</th>
                 <th>Actions</th>
@@ -151,7 +237,7 @@ const Customers = () => {
             <tbody>
               {loading ? (
                 Array(5).fill(0).map((_, i) => (
-                  <tr key={i}><td colSpan="5"><div className={styles.skeletonLine}></div></td></tr>
+                  <tr key={i}><td colSpan="6"><div className={styles.skeletonLine}></div></td></tr>
                 ))
               ) : filteredCustomers.length > 0 ? filteredCustomers.map((customer) => (
                 <tr key={customer.id}>
@@ -186,6 +272,13 @@ const Customers = () => {
                           <div className={styles.username}>@{customer.user?.username}</div>
                         </div>
                       </div>
+                    )}
+                  </td>
+                  <td>
+                    {customer.user?.is_active ? (
+                      <Badge status="APPROVED">Active</Badge>
+                    ) : (
+                      <Badge status="REJECTED">Suspended</Badge>
                     )}
                   </td>
                   <td>
@@ -226,13 +319,21 @@ const Customers = () => {
                         <>
                           <Button variant="ghost" size="sm" onClick={() => handleOpenBookingModal(customer.id)} className={styles.bookBtn} title="Create Booking" icon={PlusCircle} />
                           <Button variant="ghost" size="sm" onClick={() => handleEditClick(customer)} className={styles.editBtn} title="Edit Profile" icon={Pencil} />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleToggleStatus(customer)}
+                            className={customer.user?.is_active ? styles.suspendBtn : styles.activateBtn}
+                            title={customer.user?.is_active ? "Suspend Customer" : "Reactivate Customer"}
+                            icon={customer.user?.is_active ? ShieldOff : Shield}
+                          />
                         </>
                       )}
                     </div>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="5" className={styles.emptyState}>No customers found match your search criteria.</td></tr>
+                <tr><td colSpan="6" className={styles.emptyState}>No customers found match your search criteria.</td></tr>
               )}
             </tbody>
           </table>
