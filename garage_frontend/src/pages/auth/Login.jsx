@@ -16,8 +16,40 @@ const Login = () => {
       const role = await login(data.username, data.password);
       toast.success("Welcome back!");
       navigate(role === "ADMIN" ? "/admin/dashboard" : "/customer/dashboard");
-    } catch {
-      setError("Login failed. Check credentials.");
+    } catch (err) {
+      // Debug: log the error structure
+      console.log("Login error:", err);
+      console.log("Error response data:", err?.response?.data);
+
+      // Check if it's a suspension error - DRF ValidationError can be nested
+      const errorData = err?.response?.data;
+      const errorDetail = errorData?.detail;
+      const errorCode = errorData?.code;
+      const nestedDetail = errorData?.detail?.detail; // Nested validation error
+      const nestedCode = errorData?.detail?.code;
+
+      const isSuspended =
+        errorCode === 'user_suspended' ||
+        nestedCode === 'user_suspended' ||
+        (typeof errorDetail === 'string' && errorDetail.includes('suspended')) ||
+        (typeof nestedDetail === 'string' && nestedDetail.includes('suspended')) ||
+        (typeof errorDetail === 'object' && JSON.stringify(errorDetail).includes('suspended'));
+
+      if (isSuspended) {
+        toast(`Your account has been suspended. Please contact support.`, {
+          icon: '🚫',
+          style: {
+            background: '#fef2f2',
+            color: '#b91c1c',
+            border: '1px solid #fecaca',
+            fontWeight: '600'
+          },
+          duration: 5000
+        });
+        setError("Account suspended");
+      } else {
+        setError("Login failed. Check credentials.");
+      }
     }
   };
 
