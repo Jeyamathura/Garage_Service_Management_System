@@ -47,6 +47,27 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return CustomerRegistrationSerializer
         return CustomerSerializer
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def toggle_status(self, request, pk=None):
+        customer = self.get_object()
+        user = customer.user
+        
+        # Prevent admin from suspending themselves if they were a customer (edge case)
+        if user == request.user:
+             return Response(
+                {'error': 'You cannot suspend your own account'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.is_active = not user.is_active
+        user.save()
+        
+        status_text = "activated" if user.is_active else "suspended"
+        return Response({
+            'status': status_text,
+            'is_active': user.is_active
+        })
+
         
 # -------------------
 # Vehicle
