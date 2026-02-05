@@ -7,6 +7,7 @@ import {
   rejectBooking,
   startBooking,
   completeBooking,
+  cancelBooking,
 } from "../../api/booking.api";
 import { createInvoice } from "../../api/invoice.api";
 import Card from "../../components/ui/Card";
@@ -158,6 +159,23 @@ const Bookings = () => {
     }
   };
 
+  const handleCancel = async (id) => {
+    confirmAction({
+      title: "Cancel Booking",
+      message: "This will permanently cancel the approved booking. Continue?",
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await cancelBooking(id);
+          fetchBookings();
+          toast.success("Booking cancelled");
+        } catch (error) {
+          toast.error("Failed to cancel booking");
+        }
+      }
+    });
+  };
+
 
 
   const handleGenerateInvoiceClick = (bookingId) => {
@@ -287,7 +305,10 @@ const Bookings = () => {
                         </>
                       )}
                       {booking.status === "APPROVED" && (
-                        <Button variant="secondary" size="sm" onClick={() => handleStart(booking.id)} icon={Play}>Start</Button>
+                        <div className={styles.buttonGroup}>
+                          <Button variant="secondary" size="sm" onClick={() => handleStart(booking.id)} icon={Play}>Start</Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleCancel(booking.id)} className={styles.rejectBtn}><X size={16} /></Button>
+                        </div>
                       )}
                       {booking.status === "IN_PROGRESS" && (
                         <Button variant="primary" size="sm" onClick={() => handleComplete(booking.id)} icon={CheckCircle}>Complete</Button>

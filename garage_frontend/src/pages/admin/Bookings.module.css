@@ -150,7 +150,8 @@
     color: var(--success);
 }
 
-.actions {
+.actions,
+.buttonGroup {
     display: flex;
     gap: 0.5rem;
 }
