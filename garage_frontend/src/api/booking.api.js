@@ -21,6 +21,11 @@ export const rejectBooking = async (id) => {
     return response.data;
 };
 
+export const cancelBooking = async (id) => {
+    const response = await api.post(`/bookings/${id}/cancel/`);
+    return response.data;
+};
+
 export const startBooking = async (id) => {
     const response = await api.post(`/bookings/${id}/start/`);
     return response.data;
