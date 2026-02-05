@@ -40,18 +40,28 @@ const Invoices = () => {
             const targetInvoice = invoices.find(inv => inv.id === targetId);
 
             if (targetInvoice) {
-                setSearchQuery(`INV-${targetId.toString().padStart(4, '0')}`);
+                // Ensure all invoices are shown so the row exists in the DOM
+                setStatusFilter("ALL");
+                setSearchQuery("");
                 setHighlightedId(targetId);
                 setSelectedInvoice(targetInvoice);
 
-                // Delay modal slightly so user sees the "blink" in the list first
-                setTimeout(() => setShowModal(true), 500);
+                // Smooth scroll to the target row after a short delay to ensure it's rendered
+                setTimeout(() => {
+                    const row = document.getElementById(`invoice-row-${targetId}`);
+                    if (row) {
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
 
-                // Clear state to prevent reopening if we needed to, but for now this is fine
+                // Delay modal to allow user to see the highlighted row first
+                setTimeout(() => setShowModal(true), 1200);
+
+                // Clear state to prevent reopening on refresh
                 window.history.replaceState({}, document.title);
 
-                // Clear highlight after animation ends (matches CSS duration)
-                setTimeout(() => setHighlightedId(null), 2500);
+                // Clear highlight after a long enough period (animation duration)
+                setTimeout(() => setHighlightedId(null), 4000);
             }
         }
     }, [invoices, location.state]);
@@ -198,6 +208,7 @@ const Invoices = () => {
                             ) : filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => (
                                 <tr
                                     key={invoice.id}
+                                    id={`invoice-row-${invoice.id}`}
                                     onClick={() => handleRowClick(invoice)}
                                     className={`${styles.clickableRow} ${highlightedId === invoice.id ? styles.highlightedRow : ''}`}
                                 >
