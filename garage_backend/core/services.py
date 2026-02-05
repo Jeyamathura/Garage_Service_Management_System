@@ -38,6 +38,15 @@ class BookingService:
         return booking
 
     @staticmethod
+    def cancel_booking(booking: Booking):
+        if booking.status not in ['PENDING', 'APPROVED']:
+            raise ValueError('Only pending or approved bookings can be cancelled')
+
+        booking.status = 'CANCELLED'
+        booking.save()
+        return booking
+
+    @staticmethod
     def start_service(booking: Booking):
         if booking.status != 'APPROVED':
             raise ValueError('Service can start only after approval')
