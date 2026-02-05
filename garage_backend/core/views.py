@@ -151,6 +151,15 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(self.get_serializer(booking).data)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
+    def cancel(self, request, pk=None):
+        booking = self.get_object()
+        try:
+            BookingService.cancel_booking(booking)
+            return Response(self.get_serializer(booking).data)
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdmin])
     def start(self, request, pk=None):
         booking = self.get_object()
         BookingService.start_service(booking)
