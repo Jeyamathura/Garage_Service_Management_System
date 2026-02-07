@@ -3,7 +3,6 @@ import { getServices } from '../../api/service.api';
 import ServiceCard from '../../components/service/ServiceCard';
 import { useNavigate } from 'react-router-dom';
 import styles from './Services.module.css';
-import { Sparkles } from 'lucide-react';
 
 const Services = () => {
     const [services, setServices] = useState([]);
@@ -35,10 +34,6 @@ const Services = () => {
                 <div className={styles.headerContent}>
                     <h1 className={styles.title}>Available Services</h1>
                     <p className={styles.subtitle}>Select a premium service for your vehicle</p>
-                </div>
-                <div className={styles.badge}>
-                    <Sparkles size={16} />
-                    <span>Premium Care</span>
                 </div>
             </header>
 
