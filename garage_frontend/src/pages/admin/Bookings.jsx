@@ -274,6 +274,9 @@ const Bookings = () => {
                       <User size={12} />
                       {booking.customer?.user?.first_name} {booking.customer?.user?.last_name}
                     </div>
+                    {booking.customer?.user?.username && (
+                      <span className={styles.username}>@{booking.customer?.user?.username}</span>
+                    )}
                   </td>
                   <td>
                     <div className={styles.vehicleInfo}>

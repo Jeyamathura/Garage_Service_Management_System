@@ -123,6 +123,14 @@
     color: var(--text-muted);
 }
 
+.username {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 1.25rem;
+    display: block;
+}
+
 .vehicleInfo {
     display: flex;
     align-items: center;
