@@ -300,21 +300,21 @@ const Bookings = () => {
                     <div className={styles.actions} onClick={e => e.stopPropagation()}>
                       {booking.status === "PENDING" && (
                         <>
-                          <Button variant="ghost" size="sm" onClick={() => handleApproveClick(booking)} className={styles.approveBtn}><Check size={16} /></Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleReject(booking.id)} className={styles.rejectBtn}><X size={16} /></Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleApproveClick(booking)} className={styles.approveBtn} title="Approve & Schedule"><Check size={16} /></Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleReject(booking.id)} className={styles.rejectBtn} title="Reject Request"><X size={16} /></Button>
                         </>
                       )}
                       {booking.status === "APPROVED" && (
                         <div className={styles.buttonGroup}>
-                          <Button variant="secondary" size="sm" onClick={() => handleStart(booking.id)} icon={Play}>Start</Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleCancel(booking.id)} className={styles.rejectBtn}><X size={16} /></Button>
+                          <Button variant="secondary" size="sm" onClick={() => handleStart(booking.id)} icon={Play} title="Start Workshop Service">Start</Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleCancel(booking.id)} className={styles.rejectBtn} title="Cancel Approved Booking"><X size={16} /></Button>
                         </div>
                       )}
                       {booking.status === "IN_PROGRESS" && (
-                        <Button variant="primary" size="sm" onClick={() => handleComplete(booking.id)} icon={CheckCircle}>Complete</Button>
+                        <Button variant="primary" size="sm" onClick={() => handleComplete(booking.id)} icon={CheckCircle} title="Finalize Maintenance Cycle">Complete</Button>
                       )}
                       {booking.status === "COMPLETED" && (
-                        <Button variant="ghost" size="sm" onClick={() => handleGenerateInvoiceClick(booking.id)} icon={FileText}>Invoice</Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleGenerateInvoiceClick(booking.id)} icon={FileText} title="View or Manage Invoice">Invoice</Button>
                       )}
                     </div>
                   </td>

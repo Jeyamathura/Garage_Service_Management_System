@@ -266,6 +266,7 @@ const Invoices = () => {
                                                     <button
                                                         onClick={(e) => handleEditClick(invoice, e)}
                                                         className={styles.inlineEditBtn}
+                                                        title="Edit Additional Charges"
                                                     >
                                                         <Pencil size={14} />
                                                     </button>
@@ -300,6 +301,7 @@ const Invoices = () => {
                                             variant="ghost"
                                             size="sm"
                                             icon={Download}
+                                            title="Download Invoice PDF"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 downloadInvoicePDF(invoice.id);
