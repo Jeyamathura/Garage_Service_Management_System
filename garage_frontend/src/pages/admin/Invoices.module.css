@@ -138,8 +138,20 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: var(--text-muted);
     margin-top: 0.25rem;
+}
+
+.userNameDark {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.userNameMuted {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    display: block;
+    margin-left: 1.25rem;
+    font-weight: 400;
 }
 
 .servicePrice {

@@ -138,11 +138,19 @@ const Invoices = () => {
 
     const filteredInvoices = invoices.filter(invoice => {
         const searchLower = searchQuery.toLowerCase();
-        const customerUsername = invoice.booking?.customer?.user?.username?.toLowerCase() || "";
+        const user = invoice.booking?.customer?.user;
+        const customerUsername = user?.username?.toLowerCase() || "";
+        const customerFirstName = user?.first_name?.toLowerCase() || "";
+        const customerLastName = user?.last_name?.toLowerCase() || "";
         const invoiceId = `INV-${invoice.id.toString().padStart(4, '0')}`.toLowerCase();
         const statusMatch = statusFilter === "ALL" || invoice.payment_status === statusFilter;
 
-        return statusMatch && (customerUsername.includes(searchLower) || invoiceId.includes(searchLower));
+        return statusMatch && (
+            customerUsername.includes(searchLower) ||
+            customerFirstName.includes(searchLower) ||
+            customerLastName.includes(searchLower) ||
+            invoiceId.includes(searchLower)
+        );
     });
 
     return (
@@ -218,8 +226,17 @@ const Invoices = () => {
                                     <td>
                                         <div className={styles.customerName}>
                                             <User size={12} />
-                                            {invoice.booking?.customer?.user?.username || 'N/A'}
+                                            {invoice.booking?.customer?.user ? (
+                                                <span className={styles.userNameDark}>
+                                                    {invoice.booking.customer.user.first_name} {invoice.booking.customer.user.last_name}
+                                                </span>
+                                            ) : 'N/A'}
                                         </div>
+                                        {invoice.booking?.customer?.user?.username && (
+                                            <span className={styles.userNameMuted}>
+                                                @{invoice.booking.customer.user.username}
+                                            </span>
+                                        )}
                                     </td>
                                     <td>
                                         <div className={styles.servicePrice}>
