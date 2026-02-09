@@ -35,7 +35,17 @@ const InvoiceCard = ({ invoice }) => {
             <div className={styles.invoiceGrid}>
                 <div>
                     <h4>Bill To</h4>
-                    <p>{invoice.booking?.customer?.user?.username}</p>
+                    <p>
+                        {invoice.booking?.customer?.user ? (
+                            <>
+                                <strong>{invoice.booking.customer.user.first_name} {invoice.booking.customer.user.last_name}</strong>
+                                <br />
+                                <span className={styles.muted}>
+                                    @{invoice.booking.customer.user.username}
+                                </span>
+                            </>
+                        ) : 'N/A'}
+                    </p>
                     <p>{invoice.booking?.customer?.phone}</p>
                 </div>
                 <div>
