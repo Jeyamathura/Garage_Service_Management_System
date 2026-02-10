@@ -264,9 +264,6 @@ const Customers = () => {
                       </div>
                     ) : (
                       <div className={styles.customerProfile}>
-                        <div className={styles.avatar}>
-                          {customer.user?.first_name?.[0]}{customer.user?.last_name?.[0]}
-                        </div>
                         <div>
                           <div className={styles.fullName}>{customer.user?.first_name} {customer.user?.last_name}</div>
                           <div className={styles.username}>@{customer.user?.username}</div>
