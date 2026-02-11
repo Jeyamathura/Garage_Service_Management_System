@@ -77,7 +77,7 @@ const AddVehicleModal = ({ isOpen, onClose, onVehicleAdded, vehicle }) => {
                 <>
                     <Button variant="secondary" onClick={onClose}>Discard</Button>
                     <Button onClick={handleSubmit} loading={loading} icon={vehicle ? Pencil : Plus}>
-                        {vehicle ? "Update Repository" : "Add Vehicle"}
+                        {vehicle ? "Update" : "Add Vehicle"}
                     </Button>
                 </>
             }
