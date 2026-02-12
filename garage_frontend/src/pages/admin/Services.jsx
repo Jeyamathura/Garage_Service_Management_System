@@ -165,7 +165,7 @@ const Services = () => {
                                     </td>
                                     <td>
                                         <div className={styles.serviceNameRow}>
-                                            <div className={styles.iconBox}><Wrench size={16} /></div>
+                                            <Wrench size={12} />
                                             <div className={styles.nameLabel}>{service.service_name}</div>
                                         </div>
                                     </td>
