@@ -282,9 +282,12 @@ class InvoiceSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
         if request and request.user.is_authenticated:
-            self.fields['booking_id'].queryset = Booking.objects.filter(
-                customer__user=request.user
-            )
+            if request.user.role == 'ADMIN':
+                self.fields['booking_id'].queryset = Booking.objects.all()
+            else:
+                self.fields['booking_id'].queryset = Booking.objects.filter(
+                    customer__user=request.user
+                )
 
     def update(self, instance, validated_data):
         from decimal import Decimal
