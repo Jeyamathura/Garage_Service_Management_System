@@ -107,8 +107,9 @@ const Invoices = () => {
     const handleEditClick = (invoice, e) => {
         e.stopPropagation();
         setEditingId(invoice.id);
+        const currentCharges = parseFloat(invoice.additional_charges || 0);
         setEditValues({
-            charges: parseFloat(invoice.additional_charges || 0),
+            charges: currentCharges === 0 ? '' : currentCharges.toString(),
             description: invoice.additional_charges_description || ''
         });
     };
@@ -118,7 +119,7 @@ const Invoices = () => {
         try {
             await updateInvoiceCharges(
                 invoiceId,
-                editValues.charges,
+                parseFloat(editValues.charges) || 0,
                 editValues.description
             );
             setEditingId(null);
@@ -255,7 +256,7 @@ const Invoices = () => {
                                                     value={editValues.charges}
                                                     onChange={(e) => setEditValues({
                                                         ...editValues,
-                                                        charges: parseFloat(e.target.value) || 0
+                                                        charges: e.target.value
                                                     })}
                                                     className={styles.editInput}
                                                 />
