@@ -265,7 +265,7 @@ const Customers = () => {
                     ) : (
                       <div className={styles.customerProfile}>
                         <div>
-                          <div className={styles.fullName}>{customer.user?.first_name} {customer.user?.last_name}</div>
+                          <div className={styles.fullName}><User size={12} style={{ color: "var(--text-muted)", marginRight: "0.5rem" }} />{customer.user?.first_name} {customer.user?.last_name}</div>
                           <div className={styles.username}>@{customer.user?.username}</div>
                         </div>
                       </div>
