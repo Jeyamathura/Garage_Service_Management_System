@@ -8,7 +8,8 @@ import {
     Plus,
     Search,
     Filter,
-    Pencil
+    Pencil,
+    User
 } from "lucide-react";
 
 import styles from "./Vehicles.module.css";
@@ -105,6 +106,7 @@ const Vehicles = () => {
                                     <td>
                                         <div className={styles.ownerProfile}>
                                             <div className={styles.ownerName}>
+                                                <User size={12} />
                                                 {vehicle.customer?.user?.first_name} {vehicle.customer?.user?.last_name}
                                             </div>
                                             <div className={styles.username}>
