@@ -106,7 +106,7 @@ const Vehicles = () => {
                                     <td>
                                         <div className={styles.ownerProfile}>
                                             <div className={styles.ownerName}>
-                                                <User size={12} />
+                                                <User size={12} style={{ color: "var(--text-muted)" }} />
                                                 {vehicle.customer?.user?.first_name} {vehicle.customer?.user?.last_name}
                                             </div>
                                             <div className={styles.username}>
