@@ -104,7 +104,7 @@ const Dashboard = () => {
                     trend="+2 this hour"
                 />
                 <MainStat
-                    title="Active Services"
+                    title="In Progress Services"
                     value={stats.inProgress}
                     icon={Activity}
                     color="blue"
